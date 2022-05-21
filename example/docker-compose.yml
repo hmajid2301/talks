@@ -1,0 +1,32 @@
+version: "3.8"
+
+volumes:
+  postgres_data: {}
+
+services:
+  app:
+    build: 
+      file: Dockerfile.poetry
+      target: development
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PORT=5432
+    volumes:
+      - ./:/app
+    ports:
+      - 80:8080
+
+  postgres:
+    image: postgres:13.4
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432

@@ -1,0 +1,55 @@
+FROM eu.gcr.io/backend-producti-b8633498/python-base-image:3.8 as base
+
+ARG PYSETUP_PATH
+ENV PYTHONPATH="/app"
+ENV PIP_NO_CACHE_DIR=off \
+	PIP_DISABLE_PIP_VERSION_CHECK=on \
+	PIP_DEFAULT_TIMEOUT=100 \
+	\
+	POETRY_VERSION=1.1.11 \
+	POETRY_HOME="/opt/poetry" \
+	POETRY_VIRTUALENVS_IN_PROJECT=true \
+	PYSETUP_PATH="/opt/pysetup" \
+	POETRY_NO_INTERACTION=1 \
+	\
+	VENV_PATH="/opt/pysetup/.venv"
+
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
+RUN apt-get update \
+	&& apt-get install postgresql-client -y \
+	&& rm -rf /var/lib/apt/lists/*
+
+FROM base as builder
+
+RUN apt-get update && apt-get install git openssh-client -y && \
+	mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts && \
+	pip install poetry
+
+WORKDIR $PYSETUP_PATH
+COPY poetry.lock pyproject.toml ./
+
+RUN --mount=type=ssh poetry install --no-dev
+
+
+FROM base as production
+
+USER app
+COPY --from=builder $VENV_PATH $VENV_PATH
+
+WORKDIR /app
+COPY . .
+
+EXPOSE 80
+CMD ["./start.sh"]
+
+
+FROM builder as development
+
+RUN --mount=type=ssh poetry install
+
+WORKDIR /app
+COPY . .
+
+EXPOSE 80
+CMD ["./start.sh"]
