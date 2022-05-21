@@ -1,3 +1,2 @@
-ipython
-pre-commit
-pytest
+pre-commit==2.19.0
+pytest==7.1.2

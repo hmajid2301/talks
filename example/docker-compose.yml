@@ -1,25 +1,25 @@
-version: "3.8"
-
 volumes:
   postgres_data: {}
 
 services:
   app:
     build: 
-      file: Dockerfile.poetry
+      context: .
+      dockerfile: Dockerfile.ssh
       target: development
+    command: bash /app/start.sh --reload
     depends_on:
       - postgres
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_HOST=postgres
-      - POSTGRES_DATABASE=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=postgres
     volumes:
       - ./:/app
     ports:
-      - 80:8080
+      - 80:80
 
   postgres:
     image: postgres:13.4

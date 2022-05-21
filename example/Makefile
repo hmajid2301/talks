@@ -8,19 +8,19 @@ help: ## Show this help.
 
 .PHONY: build
 build: ## Builds the Docker images needed by our app
-	@docker-compose build
+	@docker compose build --ssh default
 
 
 .PHONY: start
 start: build ## Starts the FastAPI web service
-	@docker-compose up
+	@docker compose up
 
 
 .PHONY: lint
-lint: ## Runs the lint jobs
-	@docker-compose run --rm app pre-commit run --all-files
+lint: build ## Runs the lint jobs
+	@docker compose run --rm app pre-commit run --all-files
 
 
 .PHONY: test
 test: build ## Runs the tests
-	@docker-compose run app pytest
+	@docker compose run --rm app pytest

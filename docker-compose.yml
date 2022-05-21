@@ -3,6 +3,7 @@ version: '3.8'
 services:
   revealjs:
     image: webpronl/reveal-md:latest
+    command: /slides --watch --css styles/main.css
     volumes:
       - ./:/slides
     ports:

@@ -1,32 +1,33 @@
-FROM python:3.9 as builder # A base image used to buid our other images
+FROM python:3.9.8 as builder
 
-COPY requirements.prod.txt ./
+COPY requirements.prod.txt /app/requirements.prod.txt
 
-RUN pip install --no-cache-dir -r /requirements.prod.txt && \
-	rm /requirements.prod.txt
+RUN pip install --no-cache-dir -r /app/requirements.prod.txt && \
+	rm /app/requirements.prod.txt
 
-FROM build as development # Image used for development
+FROM builder as development
 
-COPY requirements.txt start.sh ./
+COPY requirements.txt start.sh /app/
 
-RUN pip install --no-cache-dir -r /requirements.txt && \
-	rm -r /requirements.txt
+RUN apt-get update && apt-get install git && \
+	pip install --no-cache-dir -r /app/requirements.txt && \
+	rm -r /app/requirements.txt
 
 WORKDIR /app
 COPY . /app
 
 EXPOSE 80
 
-CMD ["/start.sh"]
+CMD ["bash", "/app/start.sh", "--reload"]
 
 
-FROM python:3.9-slim as production # Image used for production
+FROM python:3.9.8-slim as production
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONPATH=/app
 
-COPY start.sh ./
+COPY start.sh /app/start.sh
 
 COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
 COPY --from=builder /usr/local/lib/python3.9/site-packages/ /usr/local/lib/python3.9/site-packages/
@@ -35,4 +36,4 @@ COPY . /app
 
 EXPOSE 80
 
-CMD ["/start.sh"]
+CMD ["bash", "/app/start.sh"]
