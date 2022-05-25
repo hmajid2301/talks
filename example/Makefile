@@ -8,7 +8,7 @@ help: ## Show this help.
 
 .PHONY: build
 build: ## Builds the Docker images needed by our app
-	@docker compose build --ssh default
+	@docker compose build --ssh default --no-cache
 
 
 .PHONY: start

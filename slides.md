@@ -3,7 +3,7 @@ title: My journey using Docker as a development tool
 highlightTheme: "monokai"
 ---
 
-# My journey using Docker as a development tool
+# My journey using Docker 🐳 as a development tool 🔨
 
 <small>By Haseeb Majid</small>
 
@@ -14,8 +14,12 @@ highlightTheme: "monokai"
 - Introduction to Docker 
 - Basic Docker image
 - docker-compose
-- Makefiles
-- CI Pipeline
+  - Makefiles
+  - Docker and CI
+- Slimmer Docker image
+- Multistage Builds
+- Poetry
+- Docker and SSH
 
 ---
 
@@ -60,7 +64,6 @@ highlightTheme: "monokai"
 - Simple FastAPI Web Service
   - Interacts with Postgres database
 - It allows us to get and add new users
-
 
 ----
 
@@ -203,7 +206,6 @@ make start
 <a href="#" class="navigate-down">
     <img width="60%" height="auto" data-src="https://pbs.twimg.com/media/EEiCfp5XkAE9Wxv.jpg">
 </a>
-
 
 ---
 
@@ -369,6 +371,12 @@ make lint
 
 ----
 
+<a href="#" class="navigate-down">
+    <img width="80%" height="auto" data-src="https://miro.medium.com/max/760/1*If2z6prJkD_EsW56HmJr5Q.jpeg">
+</a>
+
+----
+
 We create this at `.github/workflows/branch.yml`
 
 
@@ -402,19 +410,17 @@ jobs:
         run: make test
 ```
 
-----
-
-<a href="#" class="navigate-down">
-    <img width="80%" height="auto" data-src="https://miro.medium.com/max/760/1*If2z6prJkD_EsW56HmJr5Q.jpeg">
-</a>
-
 ---
 
-# Can we do better ?
+<a href="#" class="navigate-down">
+    <img width="80%" height="auto" data-src="https://memegenerator.net/img/instances/76489819.jpg">
+</a>
+
+----
+
+# Let's slim our image down
 
 - Image is large
-  - Old image 1.05 GB
-  - New image 215 MB 
 - Lots of extra dependencies we don't need
   - Reduces attack surface
   - Less things that can break
@@ -425,7 +431,7 @@ jobs:
 ```Dockerfile
 FROM python:3.9.8-slim
 
-COPY ./requirements.basic.txt start.sh /app
+COPY ./requirements.txt start.sh /app
 
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
@@ -436,14 +442,16 @@ WORKDIR /app
 CMD [ "bash", "/app/start.sh" ]
 ```
 
+----
+
+1.05GB -> 215MB
+
 ---
 
 # Dev vs Prod Dependencies
 
 - We are installing our dev dependencies inside of our Docker image such as `pre-commit`
 - We don't need `pre-commit` for our production image
-- 215MB -> 201MB
-
 
 ----
 
@@ -547,7 +555,6 @@ CMD ["bash", "/app/start.sh", "--reload"]
 
 ----
 
-
 ```dockerfile
 FROM python:3.9.8 as builder
 
@@ -589,12 +596,22 @@ services:
       target: development
 ```
 
+----
+
+215MB -> 201MB
+
 ---
 
 # Dependency Management
 
 - Two files to manage dependencies
 - Use a tool like `poetry` to manage both for us
+
+----
+
+<a href="#" class="navigate-down">
+    <img width="80%" height="auto" data-src="https://res.cloudinary.com/practicaldev/image/fetch/s--qy7ghPKs--/c_imagga_scale,f_auto,fl_progressive,h_900,q_auto,w_1600/https://lh3.googleusercontent.com/WEae7StOBGmS6vkaiYroiIwEZWQ2c4DFa56RwhpuOLrzlJfMXlTfUxnpu299Xme-cRGZBdqA0HYUdVUQvduv3cwDSZHr8TMt6o4nwd4DmnWCRjco2xXlHndDSWn_rsQAPRM5saY%3Ds0">
+</a>
 
 ----
 
@@ -801,6 +818,10 @@ build: ## Builds the Docker images needed by our app
 	@docker compose build --ssh default
 ```
 
+----
+
+# CI CHANGes
+
 ---
 
 # Appendix
@@ -817,3 +838,9 @@ build: ## Builds the Docker images needed by our app
 
 <!-- TODO: Make a joke about seeking files -->
 <!-- TODO: separate sections -->
+<!-- TODO: command output -->
+<!-- TODO: ci output -->
+- https://asciinema.org/a/iE4WjUPDdT8jfw2FDiy7NmTLK
+- https://revealjs.com/markdown/
+- https://github.com/rajgoel/reveal.js-plugins/issues/11
+- https://github.com/cloudogu/reveal.js-docker#ship-your-own-slides

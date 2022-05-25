@@ -1,9 +1,11 @@
+version: "3.8"
+
 volumes:
   postgres_data: {}
 
 services:
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.ssh
       target: development

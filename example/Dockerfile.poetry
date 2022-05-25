@@ -33,7 +33,7 @@ USER app
 COPY --from=builder $VENV_PATH $VENV_PATH
 
 WORKDIR /app
-COPY . .
+COPY ./app ./
 
 EXPOSE 80
 CMD ["bash", "/app/start.sh"]
