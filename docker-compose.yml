@@ -1,34 +1,13 @@
 services:
-  dev:
-    image: cloudogu/reveal.js:dev
-    # profiles:
-    #   - "dev"
-    environment:
-      - THEME_CSS=solarized.css
-      - TITLE=My journey developing with Docker
+  presentation:
+    build:
+      context: .
+      target: dev
     volumes:
-      # - ./css/zoe.css:/reveal/css/zoe.css
+      - ./index.html:/reveal/index.html
       - ./images:/reveal/images
-      - ./resources:/resources
-      - ./docs/slides:/reveal/docs/slides
-      - ./plugin/tagcloud:/reveal/plugin/tagcloud
+      - ./docs:/reveal/docs
       - ./favicon.ico:/reveal/favicon.ico
     ports:
       - 8000:8000
       - 35729:35729
-
-  # prod:
-  #   image: cloudogu/reveal.js
-  #   profiles:
-  #     - "prod"
-  #   environment:
-  #     - THEME_CSS='css/cloudogu-black.css'
-  #     - TITLE="My journey developing with Docker"
-  #   volumes:
-  #     - ./css/cloudogu-black.css:/reveal/css/cloudogu-black.css
-  #     - ./images:/reveal/image
-  #     - ./resources:/resources
-  #     - ./docs/slides:/reveal/docs/slides
-  #     - ./plugin/tagcloud:/reveal/plugin/tagcloud
-  #   ports:
-  #     - 8080:8080

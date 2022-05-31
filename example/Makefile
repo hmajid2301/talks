@@ -16,9 +16,9 @@ start: build ## Starts the FastAPI web service
 	@docker compose up
 
 
-.PHONY: lint
-lint: build ## Runs the lint jobs
-	@docker compose run --rm app pre-commit run --all-files
+.PHONY: format
+format: build ## Runs the code formatter
+	@docker compose run --rm app black ./
 
 
 .PHONY: test

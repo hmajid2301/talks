@@ -9,8 +9,7 @@ FROM builder as development
 
 COPY requirements.txt start.sh /app/
 
-RUN apt-get update && apt-get install git && \
-	pip install --no-cache-dir -r /app/requirements.txt && \
+RUN pip install --no-cache-dir -r /app/requirements.txt && \
 	rm -r /app/requirements.txt
 
 WORKDIR /app
