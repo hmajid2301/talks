@@ -1,0 +1,4 @@
+make: Entering directory '/home/haseeb/projects/personal/developing-with-docker-slides'
+fgrep -h "##"  Makefile | fgrep -v fgrep | sed -e 's/\\$//' | sed -e 's/##//'
+make: Leaving directory '/home/haseeb/projects/personal/developing-with-docker-slides'
+ 

@@ -8,7 +8,7 @@
 
 - Introduction to Docker 
 - Basic Docker image
-- docker-compose
+- docker compose
   - Makefiles
   - Docker and CI
 - Slimmer Docker image
@@ -31,35 +31,47 @@
 
 ---
 
+Link to slides and code examples:
+
+- https://gitlab.com/hmajid2301/developing-with-docker-slides
+
+---
+
 # What is Docker ?
 
-> Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. 
+> Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. - Docker
+
+----
 
 - Docker is an open source containerisation platform  <!-- .element: class="fragment" -->
 - Allow us to package applications into containers  <!-- .element: class="fragment" -->
 - Containers run independently of each other  <!-- .element: class="fragment" -->
-  - Leverages resource isoaltion of linux keneral (such as c-groups and namespaces)  <!-- .element: class="fragment" -->
+  - Leverages resource isolation of linux keneral (such as c-groups and namespaces)  <!-- .element: class="fragment" -->
 
 ----
 
 # Why use Docker ?
 
-- Containers are very "light-weight"  <!-- .element: class="fragment" -->
+- Containers are very "light-weight" as comapared with VMs  <!-- .element: class="fragment" -->
 - Reproducible builds  <!-- .element: class="fragment" -->
-  -   All you need is Docker (cli tool) installed locally  <!-- .element: class="fragment" -->
+  -   All you need is Docker (cli tool) installed locally
 - OS Independent  <!-- .element: class="fragment" -->
-- Portability can be deployed on many platforms  <!-- .element: class="fragment" -->
-    - GCP, AWS, Azure etc  <!-- .element: class="fragment" -->
+- Portability, your app can be deployed on many platforms  <!-- .element: class="fragment" -->
+    - GCP, AWS, Azure etc
+
+notes:
+
+- light-weight as compared with VMs
+- App can be deployed anywhere not Docker
 
 ----
 
 # Image vs contianer
 
 - Closely related but separate concepts <!-- .element: class="fragment" -->
-- A container is an instance of an image <!-- .element: class="fragment" -->
 - When you start/run an image it becomes a container <!-- .element: class="fragment" -->
 - Image is a recipe, containers are the cake <!-- .element: class="fragment" -->
-   - We can make many cakes from the a given recipe
+   - We can make many cakes 🎂 from a given recipe 📜
 
 ----
 
@@ -70,8 +82,12 @@
 # Example Code
 
 - Simple FastAPI Web Service <!-- .element: class="fragment" -->
-    - Interacts with Postgres database <!-- .element: class="fragment" -->
+    - Interacts with Postgres database
 - It allows us to get and add new users <!-- .element: class="fragment" -->
+
+notes:
+
+- FastAPI is a "async" Python Web framework, similar to Flask
 
 ----
 
@@ -94,25 +110,6 @@ example
 
 ---
 
-# Basic Docker Image
-
-Create a new file called `Dockerfile` at the root of our project folder.
-
-----
-
-```dockerfile [1|3|5-6|8]
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
-
-COPY ./requirements.txt /app/requirements.txt
-
-RUN apt-get update && apt-get install -y git && \
-	pip install --no-cache-dir --upgrade -r /app/requirements.txt
-
-COPY ./app /app
-```
-
-----
-
 
 ```
 fastapi==0.78.0
@@ -125,11 +122,33 @@ uvicorn==0.15.0
 
 ----
 
+# Basic Docker Image
+
+Create a new file called `Dockerfile` at the root of our project folder.
+
+----
+
+```dockerfile [1|3|5|7]
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
+
+COPY ./requirements.txt /app/requirements.txt
+
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+
+COPY ./app /app
+```
+
+notes:
+
+Used to be the example on FastAPI but since been removed
+
+----
+
 # Let's run it
 
 ```bash
 docker build -t app .
-docker run app -p 80:80
+docker run -p 80:80 app
 
 # Access app on http://localhost
 ```
@@ -140,7 +159,7 @@ docker run app -p 80:80
 
 ---
 
-# docker-compose
+# docker compose
 
 - An easy way to spin up multiple Docker container
 - Great for development
@@ -148,9 +167,15 @@ docker run app -p 80:80
 
 ----
 
-```yaml [5-7|8-9]
-version: "3.8"
+- There is a similar tool called docker-compose <!-- .element: class="fragment" -->
+  - The new version is called docker compose
+  - Will be deprecated soon
+- New version written in Golang as a Docker plugin <!-- .element: class="fragment" -->
+- We will use docker compose today <!-- .element: class="fragment" -->
 
+----
+
+```yaml [3-5|6-7]
 services:
   app:
     build: 
@@ -162,55 +187,15 @@ services:
       - 80:80
 ```
 
-We can run it with
+Run it with:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 ----
 
 <img width="80%" height="auto" data-src="images/what-if-i-told-you-we-can-do-better.jpg">
-
----
-
-# Makefile
-
-- Think of it like a cookbook
-- Run repeatable tasks
-- Don't have to memorise complicated cli commands
-
-----
-
-Create a new file called `Makefile` at the root of our project.
-
-```makefile
-.PHONY: build
-build: ## Builds the Docker images needed by our app
-	@docker-compose build
-
-
-.PHONY: start
-start: build ## Starts the FastAPI web service
-	@docker-compose up
-```
-
-Then we can do
-
-```bash
-make start
-```
-
-----
-
-<div class="stretch">
-  <iframe src="https://asciinema.org/a/EZcPiQEFC4AbK9q8tXa5ZurB0/iframe?autoplay=1&speed=4&loop=1" height="100%" width="100%"></iframe>
-</div>
-
-
-----
-
-<img width="60%" height="auto" data-src="images/makefile.jpg">
 
 ---
 
@@ -256,7 +241,7 @@ services:
 
 ----
 
-<pre class="stretch fragment fade-out">
+<pre class="stretch">
   <code data-trim data-noescape class="bash">
   # Start Commands: 
   docker network create --driver bridge workspace_network
@@ -289,8 +274,26 @@ services:
 ----
 
 ```
-docker-compose up --build
+docker compose up --build
 ```
+
+----
+
+<div class="stretch">
+  <iframe data-src="https://asciinema.org/a/JshvHbHjApBXg7YkmYjnsIDs7/iframe?autoplay=1&speed=2&loop=1" height="100%" width="100%"></iframe>
+</div>
+
+----
+
+<div class="stretch">
+  <iframe data-src="https://asciinema.org/a/Wn4hwzFXTiXLVnOa0YNk2JRcs/iframe?autoplay=1&speed=1&loop=1" height="100%" width="100%"></iframe>
+</div>
+
+----
+
+<div class="stretch">
+  <iframe data-src="https://asciinema.org/a/7e8sPYfzCCqhI2eP5TQcDXvHz/iframe?autoplay=1&speed=2&loop=1" height="100%" width="100%"></iframe>
+</div>
 
 ----
 
@@ -321,19 +324,9 @@ example
 
 ----
 
-```makefile
-.PHONY: test
-test: build ## Run the tests
-	@docker-compose run app pytest
-```
-
-then
-
 ```bash
-make test
+docker-compose run app pytest
 ```
-
-----
 
 ```yaml [7-9|10]
 services:
@@ -349,31 +342,6 @@ services:
 	# ...
 ```
 
-----
-
-- We can also use Docker to run other dev tasks
-   - such as pre-commit hooks (linting/formatting etc)
-
-----
-
-```makefile
-.PHONY: lint
-lint: ## Runs the lint scripts
-	@docker-compose run --rm app pre-commit run --all-files
-```
-
-Then to run our linter we can do:
-
-```bash
-make lint
-```
-
-----
-
-<div class="stretch">
-  <iframe data-src="https://asciinema.org/a/VAWXyRBsKyO47bZ1IBVFparAN/iframe?autoplay=1&speed=2&loop=1" height="100%" width="100%"></iframe>
-</div>
-
 ---
 
 # Docker and CI
@@ -381,7 +349,6 @@ make lint
 - So far we have improved our life locally! <!-- .element: class="fragment" -->
 - How about our running our CI jobs in Docker as well <!-- .element: class="fragment" -->
 - Let's improve it <!-- .element: class="fragment" -->
-
 
 ----
 
@@ -422,7 +389,7 @@ jobs:
         run: make test
 ```
 
---- 
+----
 
 <img width="80%" height="auto" data-src="images/nope-we-can-do-better.jpg">
 
@@ -460,8 +427,8 @@ CMD [ "bash", "/app/start.sh" ]
 
 # Dev vs Prod Dependencies
 
-- We are installing our dev dependencies inside of our Docker image such as `pre-commit`  <!-- .element: class="fragment" -->
-- We don't need `pre-commit` for our production image  <!-- .element: class="fragment" -->
+- We are installing our dev dependencies inside of our Docker image such as pytest  <!-- .element: class="fragment" -->
+- We don't need pytest in our production image  <!-- .element: class="fragment" -->
 
 ----
 
@@ -483,7 +450,7 @@ and `requirements.txt`
 ```
 -r requirements.prod.txt
 
-pre-commit==2.19.0
+black==22.3.0
 pytest==7.1.2
 ```
 
@@ -496,7 +463,7 @@ Split into two files
 # Multistage images
 
 <pre class="stretch">
-  <code data-trim data-noescape data-line-numbers="1-6|8-21|24-40" class="dockerfile">
+  <code data-trim data-noescape data-line-numbers="1-6|8-20|23-40" class="dockerfile">
   FROM python:3.9.8 as builder
 
   COPY requirements.prod.txt /app/requirements.prod.txt
@@ -508,8 +475,7 @@ Split into two files
 
   COPY requirements.txt start.sh /app/
 
-  RUN apt-get update && apt-get install git && \
-    pip install --no-cache-dir -r /app/requirements.txt && \
+  RUN pip install --no-cache-dir -r /app/requirements.txt && \
     rm -r /app/requirements.txt
 
   WORKDIR /app
@@ -571,7 +537,7 @@ services:
 # Dependency Management
 
 - Two files to manage dependencies <!-- .element: class="fragment" -->
-- Use a tool like `poetry` to manage both for us <!-- .element: class="fragment" -->
+- Use a tool like poetry to manage both for us <!-- .element: class="fragment" -->
 
 ----
 
@@ -592,8 +558,8 @@ SQLAlchemy = "^1.4.36"
 uvicorn = "^0.17.6"
 
 [tool.poetry.dev-dependencies]
-ipython = "^8.3.0"
-pre-commit = "^2.19.0"
+black = "^22.3.0"
+pytest = "^7.1.2"
 
 # ...
 ```
@@ -659,30 +625,25 @@ pre-commit = "^2.19.0"
 
 # Folder Structure
 
-``` [7-8]
+``` [6-7]
 example
 ├── app
 │   └── ...
 ├── docker-compose.yml
 ├── Dockerfile
-├── Makefile
 ├── pyproject.toml
 ├── poetry.lock
 └── tests
     └── ...
 ```
 
-
 ---
 
 # Private Deps 
 
-<ul>
-  <li class="fragment">No PyPI</li>
-  <li class="fragment">Private git repository</li>
-  <li class="fragment">Inject an SSH key</li>
-</ul>
-
+- No PyPI
+- Private git repository
+- Inject an SSH key
 
 notes:
 
@@ -691,14 +652,6 @@ Can we inject an ssh key only during build time ?
 ----
 
 <img width="80%" height="auto" data-src="images/anakin-ssh.webp" />
-
-----
-
-# docker-compose vs docker compose
-
-- No PyPI  <!-- .element: class="fragment" -->
-- Private git repository  <!-- .element: class="fragment" -->
-- Inject an SSH key  <!-- .element: class="fragment" -->
 
 ----
 
@@ -728,7 +681,7 @@ Then update our docker image to include
 FROM base as builder
 
 RUN apt-get update && \
-    apt-get install git openssh-client -y && \
+    apt-get install openssh-client -y && \
     mkdir -p -m 0600 \
     ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts && \
     pip install poetry
@@ -786,14 +739,54 @@ jobs:
 
 ---
 
+# Makefile
+
+- Think of it like a cookbook
+- Run repeatable tasks
+- Don't have to memorise complicated cli commands
+
+----
+
+Create a new file called `Makefile` at the root of our project.
+
+```makefile
+.PHONY: build
+build: ## Builds the Docker images needed by our app
+	@docker compose build --ssh default
+
+
+.PHONY: start
+start: build ## Starts the FastAPI web service
+	@docker compose up
+
+
+.PHONY: test
+test: build ## Run the tests
+	@docker compose run app pytest
+```
+
+Then we can do
+
+```bash
+make start
+```
+
+----
+
+<div class="stretch">
+  <iframe src="https://asciinema.org/a/EZcPiQEFC4AbK9q8tXa5ZurB0/iframe?autoplay=1&speed=4&loop=1" height="100%" width="100%"></iframe>
+</div>
+
+---
+
 # Even better ? 
 
 Here are a list of things we can do even better
 
 - Devcontainer in VSCode
 - Docker Python intreperter in Pycharm
-- docker compose vs docker-compose
 - Common base image
+- Add more make targets
 
 Useful extra reading:
 
