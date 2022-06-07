@@ -4,74 +4,62 @@
 
 ---
 
-# Agenda
-
-- Introduction to Docker 
-- Basic Docker image
-- docker compose
-  - Makefiles
-  - Docker and CI
-- Slimmer Docker image
-- Multistage builds
-- Poetry
-- Docker and SSH
-
----
-
 # About me
 
-- Haseeb Majid  <!-- .element: class="fragment" -->
+- Haseeb Majid
   - A Software Engineer
   - https://haseebmajid.dev
-- Avid 🏏 cricketer  <!-- .element: class="fragment" -->
-- I work for 🥑 ZOE  <!-- .element: class="fragment" -->
+- Avid 🏏 cricketer
+- I work for 🥑 ZOE 
   - Personalised Nutrition Startup
   - https://joinzoe.com 
-- 🐱 Loves cat  <!-- .element: class="fragment" -->
-
----
-
-Link to slides and code examples:
-
-- https://gitlab.com/hmajid2301/developing-with-docker-slides
+- 🐱 Loves cats
 
 ---
 
 # What is Docker ?
 
-> Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. - Docker
+- Docker is a containerisation platform
+- Allows us to package apps
+- Containers run independently
 
-----
+notes:
 
-- Docker is an open source containerisation platform  <!-- .element: class="fragment" -->
-- Allow us to package applications into containers  <!-- .element: class="fragment" -->
-- Containers run independently of each other  <!-- .element: class="fragment" -->
-  - Leverages resource isolation of linux keneral (such as c-groups and namespaces)  <!-- .element: class="fragment" -->
+Indepdent:
+
+  - open-source containerisation platform
+  - Leverages resource isolation of linux keneral (such as c-groups and namespaces)
 
 ----
 
 # Why use Docker ?
 
-- Containers are very "light-weight" as comapared with VMs  <!-- .element: class="fragment" -->
-- Reproducible builds  <!-- .element: class="fragment" -->
-  -   All you need is Docker (cli tool) installed locally
-- OS Independent  <!-- .element: class="fragment" -->
-- Portability, your app can be deployed on many platforms  <!-- .element: class="fragment" -->
+- Containers are "light-weight"
+- Reproducible builds
+- OS Independent 
+- Portability
     - GCP, AWS, Azure etc
 
 notes:
 
-- light-weight as compared with VMs
+- Light-weight as compared with VMs
 - App can be deployed anywhere not Docker
+- Portability, your app can be deployed on many platforms
 
 ----
 
-# Image vs contianer
+# Image vs container
 
-- Closely related but separate concepts <!-- .element: class="fragment" -->
-- When you start/run an image it becomes a container <!-- .element: class="fragment" -->
-- Image is a recipe, containers are the cake <!-- .element: class="fragment" -->
-   - We can make many cakes 🎂 from a given recipe 📜
+- Closely related
+- Image -> Containers
+  - Image is a recipe 📜
+  - Containers are the cake 🎂
+
+notes:
+
+- Closely related but separate concepts
+- When you start/run an image it becomes a container
+- We can make many cakes from a given recipe
 
 ----
 
@@ -81,20 +69,22 @@ notes:
 
 # Example Code
 
-- Simple FastAPI Web Service <!-- .element: class="fragment" -->
-    - Interacts with Postgres database
-- It allows us to get and add new users <!-- .element: class="fragment" -->
+- Simple FastAPI Web Service 
+  - Interacts with DB
+- It allows us to get and add new users
 
 notes:
 
 - FastAPI is a "async" Python Web framework, similar to Flask
+- Postgres database
+
 
 ----
 
 # Folder Structure
 
 
-```
+```bash
 example
 ├── app
 │   ├── __init__.py
@@ -112,8 +102,8 @@ example
 
 
 ```
+black==22.3.0
 fastapi==0.78.0
-pre-commit==2.19.0
 psycopg2-binary==2.9.3
 pytest==7.1.2
 sqlalchemy==1.4.36
@@ -122,11 +112,7 @@ uvicorn==0.15.0
 
 ----
 
-# Basic Docker Image
-
-Create a new file called `Dockerfile` at the root of our project folder.
-
-----
+# Our First Image
 
 ```dockerfile [1|3|5|7]
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
@@ -139,6 +125,8 @@ COPY ./app /app
 ```
 
 notes:
+
+Create a new file called `Dockerfile`
 
 Used to be the example on FastAPI but since been removed
 
@@ -161,17 +149,20 @@ docker run -p 80:80 app
 
 # docker compose
 
-- An easy way to spin up multiple Docker container
-- Great for development
-  - Aimed at single host deployments
+- Manage multiple Docker containers
+- Existing tool `docker-compose`
+  - V2 called `docker compose`
+- Use `docker compose` today
 
-----
 
-- There is a similar tool called docker-compose <!-- .element: class="fragment" -->
+notes:
+
+- Easy way to manage multiple containers
+- Aimed at single host development
+- There is a similar tool called docker-compose
   - The new version is called docker compose
   - Will be deprecated soon
-- New version written in Golang as a Docker plugin <!-- .element: class="fragment" -->
-- We will use docker compose today <!-- .element: class="fragment" -->
+- New version written in Golang as a Docker plugin
 
 ----
 
@@ -187,31 +178,20 @@ services:
       - 80:80
 ```
 
-Run it with:
-
-```bash
-docker compose up --build
-```
-
 ----
 
-<img width="80%" height="auto" data-src="images/what-if-i-told-you-we-can-do-better.jpg">
+<img width="60%" height="auto" data-src="images/what-if-i-told-you-we-can-do-better.jpg">
 
 ---
 
 # App Dependencies
 
-- What if our app depends on a Database <!-- .element: class="fragment" -->
-  - Well we can also Dockerise those as well <!-- .element: class="fragment" -->
+- App depends on a Database
+  - Dockerise it
 
 ----
 
 ```yaml [3-4|9-16|22-30]
-version: "3.8"
-
-volumes:
-  postgres_data: {}
-
 services:
   app:
     image: Dockerfile
@@ -241,6 +221,12 @@ services:
 
 ----
 
+```
+docker compose up --build
+```
+
+----
+
 <pre class="stretch">
   <code data-trim data-noescape class="bash">
   # Start Commands: 
@@ -261,7 +247,6 @@ services:
   --name workspace_postgres --detach postgres:13.4
 
   # Delete Commands: 
-
   docker stop workspace_app
   docker rm workspace_app
   docker stop workspace_postgres
@@ -270,12 +255,10 @@ services:
   </code>
 </pre>
 
+notes:
 
-----
+Equivalent docker compose vs docker comamnds
 
-```
-docker compose up --build
-```
 
 ----
 
@@ -303,13 +286,12 @@ docker compose up --build
 
 # Folder Structure
 
-``` [4-6]
+``` [4-5]
 example
 ├── app
 │   └── ...
 ├── docker-compose.yml
 ├── Dockerfile
-├── Makefile
 ├── requirements.txt
 └── tests
     └── ...
@@ -317,15 +299,19 @@ example
 
 ---
 
-# Dockerise our dev tasks
+# dev tasks
 
-- We can run our tests in Docker containers too!
-    - Let's assume we are using pytest to run our tests
+- Run tests in Docker
+    - `pytest` runner
+
+notes:
+
+Assume using pytest
 
 ----
 
 ```bash
-docker-compose run app pytest
+docker compose run app pytest
 ```
 
 ```yaml [7-9|10]
@@ -346,9 +332,12 @@ services:
 
 # Docker and CI
 
-- So far we have improved our life locally! <!-- .element: class="fragment" -->
-- How about our running our CI jobs in Docker as well <!-- .element: class="fragment" -->
-- Let's improve it <!-- .element: class="fragment" -->
+- Docker running locally
+- Can we use Docker in CI? 
+
+notes:
+
+- Can we use Docker in CI as well
 
 ----
 
@@ -356,10 +345,8 @@ services:
 
 ----
 
-We create this at `.github/workflows/branch.yml`
 
-
-```yaml [3-7|10-20|21-31]
+```yaml [3-7|10-16|16]
 name: Check changes on branch
 
 on:
@@ -369,25 +356,18 @@ on:
       - "!main"
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-        with:
-          python-version: "3.9"
-          cache: "pip"
-      - name: Run Lint Jobs
-        run: make lint
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
       - name: Run Tests
-        run: make test
+        run: docker compose run app pytest
 ```
+
+notes:
+
+- We create this at `.github/workflows/branch.yml`
 
 ----
 
@@ -395,13 +375,18 @@ jobs:
 
 ---
 
-# Smaller Docker image
+# Smaller image
 
-- Image is large  <!-- .element: class="fragment" -->
-- Lots of extra dependencies we don't need  <!-- .element: class="fragment" -->
-    - Reduces attack surface  <!-- .element: class="fragment" -->
-    - Less things that can break  <!-- .element: class="fragment" -->
-- Less storage  <!-- .element: class="fragment" -->
+- Image is large 
+- Redundant Deps
+- Less storage
+  - 1.05GB -> 215MB
+
+notes:
+
+- Lots of extra dependencies we don't need
+  - Reduces attack surface
+  - Less things that can break
 
 ----
 
@@ -419,16 +404,20 @@ WORKDIR /app
 CMD [ "bash", "/app/start.sh" ]
 ```
 
-----
-
-1.05GB -> 215MB
-
 ---
 
-# Dev vs Prod Dependencies
+# Dependencies
 
-- We are installing our dev dependencies inside of our Docker image such as pytest  <!-- .element: class="fragment" -->
-- We don't need pytest in our production image  <!-- .element: class="fragment" -->
+
+- Dev dependencies in Docker image
+  - Don't need `pytest` in prod
+- Less storage
+  - 215MB -> 201MB
+
+notes:
+
+- We are installing our dev dependencies inside of our Docker image such as pytest
+- We don't need pytest in our production image
 
 ----
 
@@ -463,7 +452,7 @@ Split into two files
 # Multistage images
 
 <pre class="stretch">
-  <code data-trim data-noescape data-line-numbers="1-6|8-20|23-40" class="dockerfile">
+  <code data-trim data-noescape data-line-numbers="1-6|8-20|23-40|31-33" class="dockerfile">
   FROM python:3.9.8 as builder
 
   COPY requirements.prod.txt /app/requirements.prod.txt
@@ -528,16 +517,16 @@ services:
 
 ```
 
-----
-
-215MB -> 201MB
-
 ---
 
 # Dependency Management
 
-- Two files to manage dependencies <!-- .element: class="fragment" -->
-- Use a tool like poetry to manage both for us <!-- .element: class="fragment" -->
+- Two files for deps
+- Use poetry
+
+notes:
+  - Two files to manage deps
+  - Use a tool like poetry to manage both for us
 
 ----
 
@@ -641,22 +630,26 @@ example
 
 # Private Deps 
 
-- No PyPI
 - Private git repository
 - Inject an SSH key
+  - At build time
 
 notes:
 
-Can we inject an ssh key only during build time ? 
+Can we inject an ssh key only during build time
 
 ----
 
 <img width="80%" height="auto" data-src="images/anakin-ssh.webp" />
 
+notes:
+
+- Less chance of accidently committing
+
 ----
 
 ```bash
-poetry add git@gitlab.com:banter-bus/omnibus.git
+poetry add git+ssh@gitlab.com:banter-bus/omnibus.git
 ```
 
 <pre>
@@ -664,7 +657,7 @@ poetry add git@gitlab.com:banter-bus/omnibus.git
   [tool.poetry.dependencies]
   python = "^3.9"
   fastapi = "^0.70.0"
-  omnibus = { git = "git@gitlab.com:banter-bus/omnibus.git",
+  omnibus = { git = "ssh://git@gitlab.com:banter-bus/omnibus.git",
               rev = "0.2.5" }
   psycopg2-binary = "^2.9.3"
   SQLAlchemy = "^1.4.36"
@@ -675,13 +668,11 @@ poetry add git@gitlab.com:banter-bus/omnibus.git
 
 ----
 
-Then update our docker image to include
-
 ```dockerfile [3-7|12]
 FROM base as builder
 
 RUN apt-get update && \
-    apt-get install openssh-client -y && \
+    apt-get install openssh-client git -y && \
     mkdir -p -m 0600 \
     ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts && \
     pip install poetry
@@ -702,10 +693,8 @@ ssh-add ~/.ssh/id_rsa
 
 Then we can do
 
-```makefile
-.PHONY: build
-build: ## Builds the Docker images needed by our app
-	@docker compose build --ssh default
+```
+docker compose build --ssh default
 ```
 
 ----
@@ -730,73 +719,47 @@ jobs:
       - uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
-      - uses: google-github-actions/setup-gcloud@v0.6.0
-      - run: |-
-          gcloud --quiet auth configure-docker
       - name: Run Tests
-        run: make test
+        run: docker compose run app pytest
 ```
 
 ---
 
-# Makefile
+# Key Takeaways
 
-- Think of it like a cookbook
-- Run repeatable tasks
-- Don't have to memorise complicated cli commands
-
-----
-
-Create a new file called `Makefile` at the root of our project.
-
-```makefile
-.PHONY: build
-build: ## Builds the Docker images needed by our app
-	@docker compose build --ssh default
-
-
-.PHONY: start
-start: build ## Starts the FastAPI web service
-	@docker compose up
-
-
-.PHONY: test
-test: build ## Run the tests
-	@docker compose run app pytest
-```
-
-Then we can do
-
-```bash
-make start
-```
-
-----
-
-<div class="stretch">
-  <iframe src="https://asciinema.org/a/EZcPiQEFC4AbK9q8tXa5ZurB0/iframe?autoplay=1&speed=4&loop=1" height="100%" width="100%"></iframe>
-</div>
+- Dockerise everything
+- Leverage Docker in CI
+- Use multi-stage builds
+  - Dev and prod images
 
 ---
 
-# Even better ? 
-
-Here are a list of things we can do even better
+# Even better
 
 - Devcontainer in VSCode
-- Docker Python intreperter in Pycharm
+- Docker Python interpreter in Pycharm
 - Common base image
-- Add more make targets
-
-Useful extra reading:
-
+- Makefile
 - [Breaking Down Docker by Nawaz Siddiqui](https://kubesimplify.com/breaking-down-docker#heading-virtual-machines)
+
+---
+
+# Code & Slides
+
+- Code: https://gitlab.com/hmajid2301/developing-with-docker-slides
+- Slides: https://hmajid2301.gitlab.io/developing-with-docker-slides
 
 ---
 
 <h1 style="color:white;">Any Questions ?</h1>
 
 <!-- .slide: data-background="https://i.gifer.com/4A5.gif" -->
+
+---
+
+# My journey using Docker 🐳 as a development tool
+
+<small>By Haseeb Majid</small>
 
 <!-- TODO: Make a joke about seeking files -->
 <!-- TODO: separate sections -->

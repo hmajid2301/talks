@@ -1,0 +1,33 @@
+stages:
+  - build
+  - pages
+
+build-image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  only:
+    - main
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker build --target dev -t $CI_REGISTRY_IMAGE:dev .
+    - docker push $CI_REGISTRY_IMAGE:dev
+
+pages:
+  only:
+    - main
+  image:
+    name: registry.gitlab.com/hmajid2301/developing-with-docker-slides:dev
+    entrypoint: [""]
+  stage: pages
+  script:
+    - mv images /reveal/images
+    - mv index.html /reveal/index.html
+    - mv docs /reveal/docs
+    - mv favicon.ico /reveal/favicon.ico
+    - ls -al /reveal
+    - mv /reveal public
+  artifacts:
+    paths:
+      - public

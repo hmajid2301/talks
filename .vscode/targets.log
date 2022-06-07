@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Jun  2 10:18:42 2022
+# Make data base, printed on Mon Jun  6 18:58:25 2022
 
 # Variables
 
@@ -55,13 +55,13 @@ VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupp
 # environment
 _ = /usr/bin/dbus-update-activation-environment
 # environment
-JOURNAL_STREAM = 8:92660
+JOURNAL_STREAM = 8:107656
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-pop:/etc/xdg
 # environment
 PROJECT_PATHS = /home/haseeb/projects
 # environment
-STARSHIP_SESSION_KEY = oDMXuhDoKJsp0ESt
+STARSHIP_SESSION_KEY = YeOxHF8TrKNXl0uc
 # automatic
 @F = $(notdir $@)
 # environment
@@ -81,9 +81,9 @@ DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-MANAGERPID = 6532
+MANAGERPID = 6654
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-33ace946-4c4f-430b-8673-c74b0a1ac18e.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-bbe06b3b-5683-451e-977e-937d261c3d35.sock
 # environment
 LC_NAME = en_GB.UTF-8
 # environment
@@ -99,7 +99,7 @@ GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
 GJS_DEBUG_OUTPUT = stderr
 # environment
-SESSION_MANAGER = local/pop-os:@/tmp/.ICE-unix/6898,unix/pop-os:/tmp/.ICE-unix/6898
+SESSION_MANAGER = local/pop-os:@/tmp/.ICE-unix/7011,unix/pop-os:/tmp/.ICE-unix/7011
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -121,7 +121,7 @@ ELECTRON_RUN_AS_NODE = 1
 # environment
 PYENV_ROOT = /home/haseeb/.pyenv
 # environment
-INVOCATION_ID = 8d8d8546ca514c708a08e194fb2aff57
+INVOCATION_ID = 17688152ef1a47aaacf5d0392fddca69
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -129,7 +129,7 @@ XDG_SESSION_DESKTOP = pop
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 9055
+GIO_LAUNCHED_DESKTOP_FILE_PID = 20243
 # automatic
 %F = $(notdir $%)
 # environment
@@ -141,7 +141,7 @@ PWD = /home/haseeb/projects/personal/developing-with-docker-slides
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 6783
+SSH_AGENT_PID = 6901
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = pop:GNOME
 # environment
@@ -259,7 +259,7 @@ LC_ADDRESS = en_GB.UTF-8
 # environment
 LANG = C
 # environment
-VSCODE_PID = 9055
+VSCODE_PID = 20243
 # environment
 STARSHIP_SHELL = fish
 # variable set hash-table stats:
@@ -271,9 +271,9 @@ STARSHIP_SHELL = fish
 
 # Directories
 
-# . (device 66310, inode 61893895): 15 files, no impossibilities.
+# . (device 66309, inode 61893895): 16 files, no impossibilities.
 
-# 15 files, no impossibilities in 1 directories.
+# 16 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -288,16 +288,16 @@ all:
 #  File does not exist.
 #  File has not been updated.
 
- 
-.PHONY: help start dev
+.PHONY: help start
 #  Implicit rule search has not been done.
 #  Modification time never checked.
+ 
 #  File has not been updated.
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-25 20:35:57.880377895
+#  Last modified 2022-06-02 16:37:02.681437677
 #  File has been updated.
 #  Successfully updated.
 
@@ -307,7 +307,7 @@ start:
 #  File does not exist.
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 11):
-	@docker-compose up --build
+	@docker compose up --build
 
 help:
 #  Phony target (prerequisite of .PHONY).
@@ -317,14 +317,6 @@ help:
 #  recipe to execute (from 'Makefile', line 6):
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
-dev:
-#  Phony target (prerequisite of .PHONY).
-#  Implicit rule search has not been done.
-#  File does not exist.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 16):
-	@docker-compose run revealjs /slides --watch
-
 # Not a target:
 .DEFAULT:
 #  Implicit rule search has not been done.
@@ -332,19 +324,19 @@ dev:
 #  File has not been updated.
 
 # files hash-table stats:
-# Load=8/1024=1%, Rehash=0, Collisions=0/26=0%
+# Load=7/1024=1%, Rehash=0, Collisions=0/22=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 24 / storage = 196 B / avg = 8 B
-# current buf: size = 8162 B / used = 196 B / count = 24 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 24 / storage = 207 B / avg = 8 B
+# current buf: size = 8162 B / used = 207 B / count = 24 / avg = 8 B
 
-# strcache performance: lookups = 39 / hit rate = 38%
+# strcache performance: lookups = 35 / hit rate = 31%
 # hash-table stats:
-# Load=24/8192=0%, Rehash=0, Collisions=1/39=3%
-# Finished Make data base on Thu Jun  2 10:18:42 2022
+# Load=24/8192=0%, Rehash=0, Collisions=1/35=3%
+# Finished Make data base on Mon Jun  6 18:58:25 2022
 
  

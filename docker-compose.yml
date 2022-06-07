@@ -8,6 +8,7 @@ services:
       - ./images:/reveal/images
       - ./docs:/reveal/docs
       - ./favicon.ico:/reveal/favicon.ico
+      - ./css/:/reveal/css/
     ports:
       - 8000:8000
       - 35729:35729
