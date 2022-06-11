@@ -1,6 +1,8 @@
-# My journey using Docker 🐳 as a development tool
+# My Journey Using Docker as a Development Tool
 
-<small>By Haseeb Majid</small>
+<!-- .slide: data-background="#fac828" -->
+
+By Haseeb Majid
 
 ---
 

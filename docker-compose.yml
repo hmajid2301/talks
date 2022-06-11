@@ -6,7 +6,7 @@ services:
     volumes:
       - ./index.html:/reveal/index.html
       - ./images:/reveal/images
-      - ./docs:/reveal/docs
+      - ./slides.md:/reveal/slides.md
       - ./favicon.ico:/reveal/favicon.ico
       - ./css/:/reveal/css/
     ports:

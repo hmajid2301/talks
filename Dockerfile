@@ -39,6 +39,7 @@ RUN mv /tmp/reveal /dist/reveal
 # For some reasons libintl is only needed by envsubst in dev
 RUN mkdir -p /dist/lib/ 
 RUN cp /usr/lib/libintl.so.8 /dist/lib/
+COPY index.html images/ css/ favicon.ico slides.md /dist/reveal/
 
 
 FROM node AS dev
