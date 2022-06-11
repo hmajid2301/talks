@@ -25,7 +25,7 @@ pages:
     - mv images /reveal/images
     - mv index.html /reveal/index.html
     - mv slides.md /reveal/slides.md
-    - mv css /reveal/css
+    - mv css /reveal/css/
     - mv favicon.ico /reveal/favicon.ico
     - ls -al /reveal
     - mv /reveal public
