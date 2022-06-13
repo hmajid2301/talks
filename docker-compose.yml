@@ -8,6 +8,7 @@ services:
         - ./slides.md:/reveal/slides.md
         - ./css/zoe.css:/reveal/dist/zoe.css
         - ./css/code.css:/reveal/dist/code.css
+        - ./images/:/reveal/images/
     ports:
-      - 8000:8000
-      - 35729:35729
+      - 127.0.0.1:8000:8000
+      - 127.0.0.1:35729:35729

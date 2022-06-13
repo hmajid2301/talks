@@ -29,17 +29,17 @@ RUN sed -i '/^const qunit.*$/d' gulpfile.js
 
 WORKDIR /tmp/reveal/
 
-COPY index.html favicon.ico slides.md ./
-COPY images ./images/
-COPY css/zoe.css ./dist/zoe.css
-COPY css/code.css ./dist/code.css
-
 # Build minified js, css, copy plugins, etc. 
 RUN node_modules/gulp/bin/gulp.js build
 RUN mv /tmp/reveal /dist/reveal
 # For some reasons libintl is only needed by envsubst in dev
 RUN mkdir -p /dist/lib/ 
 RUN cp /usr/lib/libintl.so.8 /dist/lib/
+
+COPY index.html favicon.ico slides.md ./
+COPY images ./images/
+COPY css/zoe.css ./dist/zoe.css
+COPY css/code.css ./dist/code.css
 
 FROM node AS main
 COPY --from=aggregator /dist /

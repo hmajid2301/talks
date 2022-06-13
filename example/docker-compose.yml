@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile.ssh
       target: development
+      cache_from:
+        - registry.gitlab.com/haseeb-slides/developing-with-docker-slides/ssh-image:latest
     command: bash /app/start.sh --reload
     depends_on:
       - postgres
@@ -16,14 +18,14 @@ services:
     volumes:
       - ./:/app
     ports:
-      - 80:80
+      - 127.0.0.1:80:80
 
   postgres:
     image: postgres:13.4
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - /var/lib/postgresql/data
     environment:
       - POSTGRES_DATABASE=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432

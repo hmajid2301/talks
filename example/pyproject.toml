@@ -7,7 +7,7 @@ authors = ["Haseeb Majid <hello@haseebmajid.dev>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 fastapi = "^0.70.0"
-omnibus = { git = "ssh://git@gitlab.com:banter-bus/omnibus.git", rev = "0.2.5" }
+omnibus = { git = "ssh://git@gitlab.com/banter-bus/omnibus.git", rev = "0.2.5" }
 psycopg2-binary = "^2.9.3"
 SQLAlchemy = "^1.4.36"
 uvicorn = "^0.17.6"

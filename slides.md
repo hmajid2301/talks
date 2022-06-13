@@ -6,66 +6,32 @@ By Haseeb Majid
 
 ---
 
-# About me
+# About Me
 
 - Haseeb Majid
   - A Software Engineer
   - https://haseebmajid.dev
 - Avid 🏏 cricketer
 - I work for 🥑 ZOE 
-  - Personalised Nutrition Startup
   - https://joinzoe.com 
+  - Personalised nutrition startup
+  - Health Study
 - 🐱 Loves cats
 
 ---
 
-# What is Docker ?
+# Who is this talk for?
 
-- Docker is a containerisation platform
-- Allows us to package apps
-- Containers run independently
-
-notes:
-
-Indepdent:
-
-  - open-source containerisation platform
-  - Leverages resource isolation of linux keneral (such as c-groups and namespaces)
-
-----
-
-# Why use Docker ?
-
-- Containers are "light-weight"
-- Reproducible builds
-- OS Independent 
-- Portability
-    - GCP, AWS, Azure etc
+- Have used Docker
+  - But not an expert
+- Know basic CLI commands
+- Want to use Docker in CI
 
 notes:
 
-- Light-weight as compared with VMs
-- App can be deployed anywhere not Docker
-- Portability, your app can be deployed on many platforms
-
-----
-
-# Image vs container
-
-- Closely related
-- Image -> Containers
-  - Image is a recipe 📜
-  - Containers are the cake 🎂
-
-notes:
-
-- Closely related but separate concepts
-- When you start/run an image it becomes a container
-- We can make many cakes from a given recipe
-
-----
-
-<img width="80%" height="auto" data-src="images/works-on-my-machine.jpeg">
+- Learn more about using 
+- in CI
+- Multistage builds
 
 ---
 
@@ -80,43 +46,30 @@ notes:
 - FastAPI is a "async" Python Web framework, similar to Flask
 - Postgres database
 
+----
+
+# Why Docker?
+
+- Reproducible builds
+  - Easy setup developers
+  - OS Independent
+
+notes:
+
+- Upgrading MacOS nothing builds locally virtualenv
+- Docker daemon running
 
 ----
 
-# Folder Structure
-
-
-```bash
-example
-├── app
-│   ├── __init__.py
-│   ├── config.py
-│   ├── db.py
-│   ├── main.py
-│   └── models.py
-├── requirements.txt
-└── tests
-    ├── __init__.py
-    └── test_example.py
-```
-
----
-
-
-```
-black==22.3.0
-fastapi==0.78.0
-psycopg2-binary==2.9.3
-pytest==7.1.2
-sqlalchemy==1.4.36
-uvicorn==0.15.0
-```
+<img width="80%" height="auto" data-src="images/works-on-my-machine.jpeg">
 
 ----
 
-# Our First Image
+# My First Image
 
-```dockerfile [1|3|5|7]
+```dockerfile [3|5|7|9]
+# Dockerfile
+
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
 COPY ./requirements.txt /app/requirements.txt
@@ -142,6 +95,10 @@ docker run -p 80:80 app
 
 # Access app on http://localhost
 ```
+
+notes:
+
+Maps port 80 on the host to port 80 in the docker container
 
 ----
 
@@ -180,6 +137,10 @@ services:
       - 80:80
 ```
 
+```
+docker compose up --build
+```
+
 ----
 
 <img width="60%" height="auto" data-src="images/what-if-i-told-you-we-can-do-better.jpg">
@@ -191,14 +152,49 @@ services:
 - App depends on a Database
   - Dockerise it
 
+
+notes:
+
+- Easy to extend docker compose file
+
 ----
 
-```yaml [3-4|9-16|22-30]
+# Without Docker
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql.service
+
+sudo -u postgres createuser --interactive
+sudo -u postgres createdb test
+```
+
+notes:
+
+How we might have to install it like so
+
+----
+
+# With Docker
+
+```bash
+  docker run --volume "postgres_data:/var/lib/postgresql/data" \
+  --environment "POSTGRES_DATABASE=postgres" \
+  --environment "POSTGRES_PASSWORD=postgres" \
+  --publish "5432:5432" \
+  --detach postgres:13.4
+```
+
+----
+
+# With docker compose
+
+```yaml [5-10|16-24]
+# docker-compose.yml
+
 services:
   app:
-    image: Dockerfile
-    depends_on:
-      - postgres
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_HOST=postgres
@@ -208,7 +204,7 @@ services:
     volumes:
       - ./:/app
     ports:
-      - 80:8080
+      - 80:80
 
   postgres:
     image: postgres:13.4
@@ -261,56 +257,55 @@ notes:
 
 Equivalent docker compose vs docker comamnds
 
-
-----
-
-<div class="stretch">
-  <iframe data-src="https://asciinema.org/a/JshvHbHjApBXg7YkmYjnsIDs7/iframe?autoplay=1&speed=2&loop=1" height="100%" width="100%"></iframe>
-</div>
-
-----
-
-<div class="stretch">
-  <iframe data-src="https://asciinema.org/a/Wn4hwzFXTiXLVnOa0YNk2JRcs/iframe?autoplay=1&speed=1&loop=1" height="100%" width="100%"></iframe>
-</div>
-
-----
-
-<div class="stretch">
-  <iframe data-src="https://asciinema.org/a/7e8sPYfzCCqhI2eP5TQcDXvHz/iframe?autoplay=1&speed=2&loop=1" height="100%" width="100%"></iframe>
-</div>
-
 ----
 
 <img width="60%" height="auto" data-src="images/everyone-gets-a-docker-container.jpg">
 
----
+----
 
-# Folder Structure
+# Port Binding
 
-``` [4-5]
-example
-├── app
-│   └── ...
-├── docker-compose.yml
-├── Dockerfile
-├── requirements.txt
-└── tests
-    └── ...
+```yaml [7]
+# docker-compose.yml
+
+services:
+  app:
+    # ...
+    ports:
+      - 80:80
 ```
 
----
+----
 
-# dev tasks
 
-- Run tests in Docker
-    - `pytest` runner
+```yaml [21|31]
+services:
+  app:
+    # ...
+    ports:
+      - 127.0.0.1:80:80
+```
 
 notes:
 
-- Assume using pytest
-- Forget to seek files
+- Bind to host `0.0.0.0`
+- It forwards it to be accessible on every network interface on your system 
 
+---
+
+# Running Tests
+
+- Run tests in Docker
+  - `pytest` runner
+- Consistent Environment
+
+notes:
+
+- Same local and CI
+- Different environments
+- Different dependencies locally and CI or production
+- Imagine postgres version
+- Seek files
 
 ----
 
@@ -318,15 +313,15 @@ notes:
 docker compose run app pytest
 ```
 
-```yaml [7-9|10]
+```yaml [6-8|10]
 services:
  app:
     build:
       context: .
       dockerfile: Dockerfile
-    # ...
     depends_on:
       - postgres
+    # ...
 
   postgres:
 	# ...
@@ -334,14 +329,16 @@ services:
 
 ---
 
-# Docker and CI
+# CI Pipeline
 
 - Docker running locally
 - Can we use Docker in CI? 
 
 notes:
 
+- Next thing I looked at doing was now using Docker in CI
 - Can we use Docker in CI as well
+- Easier to move CI
 
 ----
 
@@ -349,8 +346,45 @@ notes:
 
 ----
 
+# Before
 
-```yaml [3-7|10-16|16]
+```yaml [16|17-20|21-25|28]
+# .github/workflows/branch.yml
+name: Check changes on branch
+
+on:
+  push:
+    branches:
+      - "*"
+      - "!main"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Test with pytest
+        run: |
+          pytest
+```
+
+----
+
+
+```yaml [5-9|12-18|18]
+# .github/workflows/branch.yml
+
 name: Check changes on branch
 
 on:
@@ -369,10 +403,6 @@ jobs:
         run: docker compose run app pytest
 ```
 
-notes:
-
-- We create this at `.github/workflows/branch.yml`
-
 ----
 
 <img width="80%" height="auto" data-src="images/nope-we-can-do-better.jpg">
@@ -388,6 +418,10 @@ notes:
 
 notes:
 
+So this is what I did next!
+
+- Slower upload times
+  - Save 30 seconds CI
 - Lots of extra dependencies we don't need
   - Reduces attack surface
   - Less things that can break
@@ -410,8 +444,26 @@ CMD [ "bash", "/app/start.sh" ]
 
 ---
 
-# Dependencies
+# Alpine vs Slim
 
+- Lack of support
+  - Standard PyPI wheels
+  - musl vs glibc
+- Image Size
+
+notes:
+
+  Alpine
+    - Comptability Issues
+    - Standard PyPI wheels don’t work on Alpine
+
+----
+
+<img width="80%" height="auto" data-src="images/improvement.jpeg">
+
+---
+
+# Dependencies
 
 - Dev dependencies in Docker image
   - Don't need `pytest` in prod
@@ -420,12 +472,22 @@ CMD [ "bash", "/app/start.sh" ]
 
 notes:
 
+Then I did this:
+
 - We are installing our dev dependencies inside of our Docker image such as pytest
 - We don't need pytest in our production image
 
 ----
 
-<img width="80%" height="auto" data-src="images/dependencies-dependencies-everywhere.jpg">
+
+```
+black==22.3.0
+fastapi==0.78.0
+psycopg2-binary==2.9.3
+pytest==7.1.2
+sqlalchemy==1.4.36
+uvicorn==0.15.0
+```
 
 ----
 
@@ -451,12 +513,35 @@ notes:
 
 Split into two files
 
----
+----
 
-# Multistage images
+<img width="80%" height="auto" data-src="images/dependencies-dependencies-everywhere.jpg">
+
+----
+
+# Multistage Builds
+
+<img width="80%" height="auto" data-src="images/hands-up.jpg">
+
+Notes:
+
+- Put your hand up if you've heard of multistage builds
+
+----
+
+<img width="150%" height="auto" data-src="images/build.jpg">
+
+Notes:
+
+- Multiple `FROM` statements
+- Copy build artefacts from a previous stage
+
+----
+
+# Image
 
 <pre class="stretch">
-  <code data-trim data-noescape data-line-numbers="1-6|8-20|23-40|31-33" class="dockerfile">
+  <code data-trim data-noescape data-line-numbers="1-6|8-20|23-40|29-32" class="dockerfile">
   FROM python:3.9.8 as builder
 
   COPY requirements.prod.txt /app/requirements.prod.txt
@@ -481,9 +566,7 @@ Split into two files
 
   FROM python:3.9.8-slim as production
 
-  ENV PYTHONDONTWRITEBYTECODE 1
-  ENV PYTHONUNBUFFERED 1
-  ENV PYTHONPATH=/app
+  # ...
 
   COPY start.sh /app/start.sh
 
@@ -517,13 +600,13 @@ services:
     volumes:
       - ./:/app
     ports:
-      - 80:80
+      - 127.0.0.1:80:80
 
 ```
 
 ---
 
-# Dependency Management
+# Dep Management
 
 - Two files for deps
 - Use poetry
@@ -531,10 +614,7 @@ services:
 notes:
   - Two files to manage deps
   - Use a tool like poetry to manage both for us
-
-----
-
-<img width="80%" height="auto" data-src="images/poetry.webp">
+  - Reproducible builds
 
 ----
 
@@ -559,6 +639,10 @@ pytest = "^7.1.2"
 
 ----
 
+<img width="80%" height="auto" data-src="images/this-is-fine.png" />
+
+----
+
 <pre class="stretch">
   <code data-trim data-noescape data-line-numbers="3-15|20-27|30-39|42-50" class="dockerfile">
   FROM python:3.9.8-slim as base
@@ -579,7 +663,6 @@ pytest = "^7.1.2"
 
   ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-
   FROM base as builder
 
   RUN pip install poetry
@@ -592,7 +675,6 @@ pytest = "^7.1.2"
 
   FROM python:3.9.8-slim as production
 
-  USER app
   COPY --from=builder $VENV_PATH $VENV_PATH
 
   WORKDIR /app
@@ -614,21 +696,50 @@ pytest = "^7.1.2"
   </code>
 </pre>
 
-----
+---
 
-# Folder Structure
+# !Root
 
-``` [6-7]
-example
-├── app
-│   └── ...
-├── docker-compose.yml
-├── Dockerfile
-├── pyproject.toml
-├── poetry.lock
-└── tests
-    └── ...
+```dockerfile [3-5|7]
+FROM python:3.9.8-slim as production
+
+RUN addgroup --gid 1001 --system app \
+    && adduser --no-create-home --shell \
+    /bin/false --disabled-password --uid 1001 --system --group app
+
+USER app
+COPY --from=builder $VENV_PATH $VENV_PATH
+
+# ...
 ```
+
+notes:
+
+- Don't want to run as root
+- Reduces chance of exploit
+- Most applications don't need root permissions
+- After this all commands are run as `app` user
+
+---
+
+# Cache From
+
+```yaml [6-7]
+services:
+  app:
+    build:
+      context: .
+      target: development
+      cache_from:
+        - registry.gitlab.com/haseeb-slides/developing-with-docker-slides/python-image:latest
+    command: bash /app/start.sh --reload
+    # ....
+```
+
+notes: 
+
+- If the provided image and your current build have layers in common, you get the same speed up as if the image had been built on the same machine.
+- Without using --cache-from our build script would always have to execute every command in the Dockerfile, as the build cache would be empty:
 
 ---
 
@@ -703,12 +814,6 @@ docker compose build --ssh default
 
 ----
 
-<div class="stretch">
-  <iframe data-src="https://asciinema.org/a/LNUbPGRehtxI2OuhVBhWHMNYi/iframe?autoplay=1&speed=2&loop=1&t=20" height="100%" width="100%"></iframe>
-</div>
-
-----
-
 # CI Changes
 
 ```yml [9-11]
@@ -740,31 +845,33 @@ jobs:
 
 # Even better
 
+- [Docker Slim](https://github.com/docker-slim/docker-slim)
+- [Dive](https://github.com/wagoodman/dive)
+- Anchore image scan
 - Devcontainer in VSCode
 - Docker Python interpreter in Pycharm
 - Common base image
 - Makefile
+
+----
+
+# Articles
+
 - [Breaking Down Docker by Nawaz Siddiqui](https://kubesimplify.com/breaking-down-docker#heading-virtual-machines)
 - [Announcing Compose V2 General Availability](https://www.docker.com/blog/announcing-compose-v2-general-availability/)
+- [Caching Docker layers on serverless build hosts with multi-stage builds](https://andrewlock.net/caching-docker-layers-on-serverless-build-hosts-with-multi-stage-builds---target,-and---cache-from/)
+- [Using Alpine can make Python Docker builds 50× slower](https://pythonspeed.com/articles/alpine-docker-python/)
 
 ---
 
-# Code & Slides
+# Any Questions ?
 
-- Code: https://gitlab.com/hmajid2301/developing-with-docker-slides
-- Slides: https://hmajid2301.gitlab.io/developing-with-docker-slides
+- Code: https://gitlab.com/haseeb-slides/docker-as-a-dev-tool
+- Slides: https://docker-as-a-dev-tool.haseebmajid.dev/
 
----
+----
 
-<h1 style="color:white;">Any Questions ?</h1>
+# Appendix 
 
-<!-- .slide: data-background="https://i.gifer.com/4A5.gif" -->
-
----
-
-# My journey using Docker 🐳 as a development tool
-
-<small>By Haseeb Majid</small>
-
-<!-- TODO: Make a joke about seeking files -->
-<!-- TODO: separate sections -->
+- [Arrows in Multi-stage build Image](https://www.flaticon.com/free-icons/arrow)
+- [Hand Illustration](https://www.vecteezy.com/vector-art/1777476-open-hands-up-of-different-types-of-skins)
