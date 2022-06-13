@@ -18,7 +18,7 @@ pages:
   only:
     - main
   image:
-    name: registry.gitlab.com/hmajid2301/developing-with-docker-slides
+    name: registry.gitlab.com/haseeb-slides/docker-as-a-dev-tool
   stage: pages
   script:
     - mv /reveal public
