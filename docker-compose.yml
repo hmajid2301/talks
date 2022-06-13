@@ -2,13 +2,12 @@ services:
   presentation:
     build:
       context: .
-      target: dev
+      target: main
     volumes:
-      - ./index.html:/reveal/index.html
-      - ./images:/reveal/images
-      - ./slides.md:/reveal/slides.md
-      - ./favicon.ico:/reveal/favicon.ico
-      - ./css/:/reveal/css/
+        - ./index.html:/reveal/index.html
+        - ./slides.md:/reveal/slides.md
+        - ./css/zoe.css:/reveal/dist/zoe.css
+        - ./css/code.css:/reveal/dist/code.css
     ports:
       - 8000:8000
       - 35729:35729

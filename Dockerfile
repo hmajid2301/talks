@@ -1,8 +1,4 @@
-ARG ENV=prod
-
 FROM node:14.18.1-alpine3.14 as node
-FROM nginxinc/nginx-unprivileged:1.21.3-alpine as nginx
-
 
 FROM node as aggregator 
 RUN mkdir -p /tmp/reveal /dist/scripts
@@ -31,38 +27,22 @@ RUN cp -r /reveal.js-${REVEAL_VERSION}/* /tmp/reveal/
 # Remove qunite dependency (see above)
 RUN sed -i '/^const qunit.*$/d' gulpfile.js
 
-FROM aggregator AS dev-aggregator
-WORKDIR /tmp/reveal
+WORKDIR /tmp/reveal/
+
+COPY index.html favicon.ico slides.md ./
+COPY images ./images/
+COPY css/zoe.css ./dist/zoe.css
+COPY css/code.css ./dist/code.css
+
 # Build minified js, css, copy plugins, etc. 
 RUN node_modules/gulp/bin/gulp.js build
 RUN mv /tmp/reveal /dist/reveal
 # For some reasons libintl is only needed by envsubst in dev
 RUN mkdir -p /dist/lib/ 
 RUN cp /usr/lib/libintl.so.8 /dist/lib/
-COPY index.html images/ css/ favicon.ico slides.md /dist/reveal/
 
-
-FROM node AS dev
-COPY --from=dev-aggregator /dist /
+FROM node AS main
+COPY --from=aggregator /dist /
 EXPOSE 8000
 EXPOSE 35729
-ENTRYPOINT [ "npm", "run", "start", "--prefix", "/reveal/", "--", "--host", "0.0.0.0"]
-
-
-FROM aggregator AS prod-aggregator
-WORKDIR /tmp/reveal
-RUN mkdir -p /dist/usr/share/nginx/ /dist/reveal/
-# Package only whats necessary for static website 
-RUN node_modules/gulp/bin/gulp.js package
-RUN unzip reveal-js-presentation.zip -d /dist/reveal/
-# Serve web content at same folder in dev and prod: /reveal. This does not work with buildkit.
-RUN ln -s /reveal /dist/usr/share/nginx/html
-
-
-FROM nginx AS prod
-COPY --from=prod-aggregator --chown=nginx /dist /
-EXPOSE 8080
-ENTRYPOINT [ "nginx", "-g", "daemon off;"]
-
-# Pick final image according to build-arg
-FROM ${ENV}
+CMD [ "npm", "run", "start", "--prefix", "/reveal/", "--", "--host", "0.0.0.0"]

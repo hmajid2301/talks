@@ -308,7 +308,9 @@ example
 
 notes:
 
-Assume using pytest
+- Assume using pytest
+- Forget to seek files
+
 
 ----
 
@@ -743,6 +745,7 @@ jobs:
 - Common base image
 - Makefile
 - [Breaking Down Docker by Nawaz Siddiqui](https://kubesimplify.com/breaking-down-docker#heading-virtual-machines)
+- [Announcing Compose V2 General Availability](https://www.docker.com/blog/announcing-compose-v2-general-availability/)
 
 ---
 
