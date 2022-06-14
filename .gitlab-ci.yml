@@ -21,6 +21,8 @@ pages:
     name: registry.gitlab.com/haseeb-slides/docker-as-a-dev-tool
   stage: pages
   script:
+    - cp index.html /reveal/index.html
+    - cp slides.md /reveal/slides.md
     - mv /reveal public
   artifacts:
     paths:
