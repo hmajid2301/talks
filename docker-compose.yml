@@ -3,6 +3,8 @@ services:
     build:
       context: .
       target: main
+      cache_from:
+        - registry.gitlab.com/haseeb-slides/docker-as-a-dev-tool
     volumes:
         - ./index.html:/reveal/index.html
         - ./slides.md:/reveal/slides.md

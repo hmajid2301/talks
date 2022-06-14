@@ -15,14 +15,12 @@ build-image:
     - docker push $CI_REGISTRY_IMAGE
 
 pages:
-  only:
-    - main
   image:
     name: registry.gitlab.com/haseeb-slides/docker-as-a-dev-tool
   stage: pages
+  only:
+    - main
   script:
-    - cp index.html /reveal/index.html
-    - cp slides.md /reveal/slides.md
     - mv /reveal public
   artifacts:
     paths:
