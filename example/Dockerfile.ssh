@@ -21,24 +21,13 @@ FROM base as builder
 
 RUN apt-get update && apt-get install git openssh-client -y && \
 	mkdir -p -m 0600 ~/.ssh && ssh-keyscan gitlab.com >> ~/.ssh/known_hosts && \
-	pip install poetry
+	pip install poetry==${POETRY_VERSION}
 
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 
 RUN --mount=type=ssh poetry install --no-dev
 
-
-FROM python:3.9.8-slim as production
-
-USER app
-COPY --from=builder $VENV_PATH $VENV_PATH
-
-WORKDIR /app
-COPY . .
-
-EXPOSE 80
-CMD ["bash", "/app/start.sh"]
 
 
 FROM builder as development
@@ -50,3 +39,20 @@ COPY . .
 
 EXPOSE 80
 CMD ["bash", "/app/start.sh", "--reload"]
+
+
+
+FROM base as production
+
+RUN addgroup --gid 1000 --system app \
+	&& adduser --no-create-home --shell \
+	/bin/false --disabled-password --uid 1000 --system --group app
+
+USER app
+COPY --from=builder $VENV_PATH $VENV_PATH
+
+WORKDIR /app
+COPY ./app /app
+
+EXPOSE 80
+CMD ["bash", "/app/start.sh"]

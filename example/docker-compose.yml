@@ -2,10 +2,10 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.ssh
-      target: development
+      dockerfile: Dockerfile.basic
+      # target: production
       cache_from:
-        - registry.gitlab.com/haseeb-slides/developing-with-docker-slides/ssh-image:latest
+        - registry.gitlab.com/haseeb-slides/docker-as-a-dev-tool/ssh-image
     command: bash /app/start.sh --reload
     depends_on:
       - postgres

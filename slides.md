@@ -1,8 +1,9 @@
-# My Journey Using Docker as a Development Tool
+# My Journey Using Docker as a Development Tool:
+
+
+From Zero to Hero
 
 <!-- .slide: data-background="#fac828" -->
-
-By Haseeb Majid
 
 ---
 
@@ -40,6 +41,7 @@ notes:
 - Simple FastAPI Web Service 
   - Interacts with DB
 - It allows us to get and add new users
+- Poetry for dependency
 
 notes:
 
@@ -63,23 +65,46 @@ notes:
 
 <img width="80%" height="auto" data-src="images/works-on-my-machine.jpeg">
 
-----
+---
 
 # My First Image
 
-```dockerfile [3|5|7|9]
-# Dockerfile
+```Dockerfile [1|3-18|20-21|23-24|26-27|29]
+FROM python:3.9.8
 
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
+ENV PYTHONUNBUFFERED=1 \
+	PYTHONDONTWRITEBYTECODE=1 \
+	PYTHONPATH="/app" \
+	PIP_NO_CACHE_DIR=off \
+	PIP_DISABLE_PIP_VERSION_CHECK=on \
+	PIP_DEFAULT_TIMEOUT=100 \
+	\
+	POETRY_VERSION=1.1.11 \
+	POETRY_HOME="/opt/poetry" \
+	POETRY_VIRTUALENVS_IN_PROJECT=true \
+	PYSETUP_PATH="/opt/pysetup" \
+	POETRY_NO_INTERACTION=1 \
+	\
+	VENV_PATH="/opt/pysetup/.venv"
 
-COPY ./requirements.txt /app/requirements.txt
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+WORKDIR $PYSETUP_PATH
+COPY pyproject.toml poetry.lock ./
 
-COPY ./app /app
+RUN pip install poetry==$POETRY_VERSION && \
+	poetry install
+
+WORKDIR /app
+COPY . .
+
+CMD [ "bash", "/app/start.sh" ]
 ```
 
 notes:
+
+PYTHONDONTWRITEBYTECODE: prevents writing out pyc files
+PYTHONUNBUFFERED: sent straight to terminal real time
 
 Create a new file called `Dockerfile`
 
@@ -99,51 +124,6 @@ docker run -p 80:80 app
 notes:
 
 Maps port 80 on the host to port 80 in the docker container
-
-----
-
-<img width="80%" height="auto" data-src="images/do-better.png">
-
----
-
-# docker compose
-
-- Manage multiple Docker containers
-- Existing tool `docker-compose`
-  - V2 called `docker compose`
-- Use `docker compose` today
-
-
-notes:
-
-- Easy way to manage multiple containers
-- Aimed at single host development
-- There is a similar tool called docker-compose
-  - The new version is called docker compose
-  - Will be deprecated soon
-- New version written in Golang as a Docker plugin
-
-----
-
-```yaml [3-5|6-7]
-services:
-  app:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./app:/app
-    ports:
-      - 80:80
-```
-
-```
-docker compose up --build
-```
-
-----
-
-<img width="60%" height="auto" data-src="images/what-if-i-told-you-we-can-do-better.jpg">
 
 ---
 
@@ -188,9 +168,30 @@ How we might have to install it like so
 
 ----
 
-# With docker compose
+<img width="80%" height="auto" data-src="images/do-better.png">
 
-```yaml [5-10|16-24]
+---
+
+# docker compose
+
+- Manage multiple Docker containers
+- Existing tool `docker-compose`
+  - V2 called `docker compose`
+- Use `docker compose` today
+
+
+notes:
+
+- Easy way to manage multiple containers
+- Aimed at single host development
+- There is a similar tool called docker-compose
+  - The new version is called docker compose
+  - Will be deprecated soon
+- New version written in Golang as a Docker plugin
+
+----
+
+```yaml [4|5-10|11-12|13-14|16|16-24]
 # docker-compose.yml
 
 services:
@@ -219,11 +220,7 @@ services:
 
 ----
 
-```
-docker compose up --build
-```
-
-----
+# Before
 
 <pre class="stretch">
   <code data-trim data-noescape class="bash">
@@ -259,7 +256,15 @@ Equivalent docker compose vs docker comamnds
 
 ----
 
-<img width="60%" height="auto" data-src="images/everyone-gets-a-docker-container.jpg">
+# After
+
+```
+docker compose up --build
+```
+
+----
+
+<img width="60%" height="auto" data-src="images/deeper.jpeg">
 
 ----
 
@@ -277,8 +282,7 @@ services:
 
 ----
 
-
-```yaml [21|31]
+```yaml [5]
 services:
   app:
     # ...
@@ -290,6 +294,10 @@ notes:
 
 - Bind to host `0.0.0.0`
 - It forwards it to be accessible on every network interface on your system 
+
+----
+
+<img width="60%" height="auto" data-src="images/what-if-i-told-you-we-can-do-better.jpg">
 
 ---
 
@@ -348,8 +356,7 @@ notes:
 
 # Before
 
-```yaml [16|17-20|21-25|28]
-# .github/workflows/branch.yml
+```yaml [3-7|14-17|18-22|25]
 name: Check changes on branch
 
 on:
@@ -359,10 +366,8 @@ on:
       - "!main"
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.9
@@ -382,23 +387,16 @@ jobs:
 ----
 
 
-```yaml [5-9|12-18|18]
-# .github/workflows/branch.yml
-
+```yaml [11]
 name: Check changes on branch
 
-on:
-  push:
-    branches:
-      - "*"
-      - "!main"
+#...
 
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v3
       - name: Run Tests
         run: docker compose run app pytest
 ```
@@ -414,7 +412,6 @@ jobs:
 - Image is large 
 - Redundant Deps
 - Less storage
-  - 1.05GB -> 215MB
 
 notes:
 
@@ -428,16 +425,17 @@ So this is what I did next!
 
 ----
 
-```Dockerfile [1|3|11]
+```Dockerfile [1]
 FROM python:3.9.8-slim
 
-COPY ./requirements.txt start.sh /app
+WORKDIR $PYSETUP_PATH
+COPY pyproject.toml poetry.lock ./
 
-RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
-
-COPY ./app /app
+RUN pip install poetry==${POETRY_VERSION} && \
+	poetry install
 
 WORKDIR /app
+COPY . .
 
 CMD [ "bash", "/app/start.sh" ]
 ```
@@ -453,9 +451,21 @@ CMD [ "bash", "/app/start.sh" ]
 
 notes:
 
+  glibc: Standard C library 
+
   Alpine
     - Comptability Issues
     - Standard PyPI wheels don’t work on Alpine
+
+----
+
+# Comparison
+
+|                  | Before     | After      |
+|------------------|------------|------------|
+| Size             | 1 GB       | 280 MB     |
+| First time build | 75 Seconds | 30 Seconds |
+| CI Pipeline Job  | 2 Minutes 40 Seconds | 1 Minute 57 Seconds  |
 
 ----
 
@@ -467,8 +477,6 @@ notes:
 
 - Dev dependencies in Docker image
   - Don't need `pytest` in prod
-- Less storage
-  - 215MB -> 201MB
 
 notes:
 
@@ -476,46 +484,6 @@ Then I did this:
 
 - We are installing our dev dependencies inside of our Docker image such as pytest
 - We don't need pytest in our production image
-
-----
-
-
-```
-black==22.3.0
-fastapi==0.78.0
-psycopg2-binary==2.9.3
-pytest==7.1.2
-sqlalchemy==1.4.36
-uvicorn==0.15.0
-```
-
-----
-
-`requirements.prod.txt`
-
-```
-fastapi==0.78.0
-psycopg2-binary==2.9.3
-sqlalchemy==1.4.36
-uvicorn==0.15.0
-```
-
-and `requirements.txt`
-
-```
--r requirements.prod.txt
-
-black==22.3.0
-pytest==7.1.2
-```
-
-notes:
-
-Split into two files
-
-----
-
-<img width="80%" height="auto" data-src="images/dependencies-dependencies-everywhere.jpg">
 
 ----
 
@@ -540,47 +508,57 @@ Notes:
 
 # Image
 
-<pre class="stretch">
-  <code data-trim data-noescape data-line-numbers="1-6|8-20|23-40|29-32" class="dockerfile">
-  FROM python:3.9.8 as builder
+```dockerfile [1|20-27|23-40|41-49|43]
+FROM python:3.9.8-slim as base
 
-  COPY requirements.prod.txt /app/requirements.prod.txt
+ARG PYSETUP_PATH
+ENV PYTHONPATH="/app"
+ENV PIP_NO_CACHE_DIR=off \
+	PIP_DISABLE_PIP_VERSION_CHECK=on \
+	PIP_DEFAULT_TIMEOUT=100 \
+	\
+	POETRY_VERSION=1.1.11 \
+	POETRY_HOME="/opt/poetry" \
+	POETRY_VIRTUALENVS_IN_PROJECT=true \
+	PYSETUP_PATH="/opt/pysetup" \
+	POETRY_NO_INTERACTION=1 \
+	\
+	VENV_PATH="/opt/pysetup/.venv"
 
-  RUN pip install --no-cache-dir -r /app/requirements.prod.txt && \
-    rm /app/requirements.prod.txt
-
-  FROM builder as development
-
-  COPY requirements.txt start.sh /app/
-
-  RUN pip install --no-cache-dir -r /app/requirements.txt && \
-    rm -r /app/requirements.txt
-
-  WORKDIR /app
-  COPY . /app
-
-  EXPOSE 80
-
-  CMD ["bash", "/app/start.sh", "--reload"]
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 
-  FROM python:3.9.8-slim as production
+FROM base as builder
 
-  # ...
+RUN pip install poetry
 
-  COPY start.sh /app/start.sh
+WORKDIR $PYSETUP_PATH
+COPY poetry.lock pyproject.toml ./
 
-  COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
-  COPY --from=builder /usr/local/lib/python3.9/site-packages/ \
-      /usr/local/lib/python3.9/site-packages/
+RUN poetry install --no-dev
 
-  COPY ./app /app
 
-  EXPOSE 80
+FROM builder as development
 
-  CMD ["bash", "/app/start.sh"]
-  </code>
-</pre>
+RUN poetry install
+
+WORKDIR /app
+COPY . .
+
+EXPOSE 80
+CMD ["bash", "/app/start.sh", "--reload"]
+
+
+FROM base as production
+
+COPY --from=builder $VENV_PATH $VENV_PATH
+
+WORKDIR /app
+COPY . .
+
+EXPOSE 80
+CMD ["bash", "/app/start.sh"]
+```
 
 
 ----
@@ -604,108 +582,16 @@ services:
 
 ```
 
----
-
-# Dep Management
-
-- Two files for deps
-- Use poetry
-
-notes:
-  - Two files to manage deps
-  - Use a tool like poetry to manage both for us
-  - Reproducible builds
-
 ----
-
-We need a `pyproject.toml` file
-
-```toml
-# ...
-
-[tool.poetry.dependencies]
-python = "^3.9"
-fastapi = "^0.78.0"
-psycopg2-binary = "^2.9.3"
-SQLAlchemy = "^1.4.36"
-uvicorn = "^0.17.6"
-
-[tool.poetry.dev-dependencies]
-black = "^22.3.0"
-pytest = "^7.1.2"
-
-# ...
-```
-
-----
-
-<img width="80%" height="auto" data-src="images/this-is-fine.png" />
-
-----
-
-<pre class="stretch">
-  <code data-trim data-noescape data-line-numbers="3-15|20-27|30-39|42-50" class="dockerfile">
-  FROM python:3.9.8-slim as base
-
-  ARG PYSETUP_PATH
-  ENV PYTHONPATH="/app"
-  ENV PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100 \
-    \
-    POETRY_VERSION=1.1.11 \
-    POETRY_HOME="/opt/poetry" \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    PYSETUP_PATH="/opt/pysetup" \
-    POETRY_NO_INTERACTION=1 \
-    \
-    VENV_PATH="/opt/pysetup/.venv"
-
-  ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
-
-  FROM base as builder
-
-  RUN pip install poetry
-
-  WORKDIR $PYSETUP_PATH
-  COPY poetry.lock pyproject.toml ./
-
-  RUN poetry install --no-dev
-
-
-  FROM python:3.9.8-slim as production
-
-  COPY --from=builder $VENV_PATH $VENV_PATH
-
-  WORKDIR /app
-  COPY ./app ./
-
-  EXPOSE 80
-  CMD ["bash", "/app/start.sh"]
-
-
-  FROM builder as development
-
-  RUN poetry install
-
-  WORKDIR /app
-  COPY . .
-
-  EXPOSE 80
-  CMD ["bash", "/app/start.sh", "--reload"]
-  </code>
-</pre>
-
----
 
 # !Root
 
 ```dockerfile [3-5|7]
-FROM python:3.9.8-slim as production
+FROM base as production
 
-RUN addgroup --gid 1001 --system app \
+RUN addgroup --gid 1000 --system app \
     && adduser --no-create-home --shell \
-    /bin/false --disabled-password --uid 1001 --system --group app
+    /bin/false --disabled-password --uid 1000 --system --group app
 
 USER app
 COPY --from=builder $VENV_PATH $VENV_PATH
@@ -720,7 +606,18 @@ notes:
 - Most applications don't need root permissions
 - After this all commands are run as `app` user
 
----
+----
+
+# Comparison
+
+|                  | Before     | After [1]     |
+|------------------|------------|------------|
+| Size             | 280 MB     | 200 MB     |
+| First time build | 30 Seconds | 35 seconds |
+
+<small>[1] Building for production target</small>
+
+----
 
 # Cache From
 
@@ -740,6 +637,7 @@ notes:
 
 - If the provided image and your current build have layers in common, you get the same speed up as if the image had been built on the same machine.
 - Without using --cache-from our build script would always have to execute every command in the Dockerfile, as the build cache would be empty:
+- saves about 5 seconds on CI
 
 ---
 
@@ -767,8 +665,7 @@ notes:
 poetry add git+ssh@gitlab.com:banter-bus/omnibus.git
 ```
 
-<pre>
-  <code data-trim data-noescape data-line-numbers="4-5" class="toml">
+```toml [4-5]
   [tool.poetry.dependencies]
   python = "^3.9"
   fastapi = "^0.70.0"
@@ -777,8 +674,7 @@ poetry add git+ssh@gitlab.com:banter-bus/omnibus.git
   psycopg2-binary = "^2.9.3"
   SQLAlchemy = "^1.4.36"
   uvicorn = "^0.17.6"
-  </code>
-</pre>
+```
 
 
 ----
@@ -832,6 +728,18 @@ jobs:
         run: docker compose run app pytest
 ```
 
+----
+
+# Comparison
+
+|                  | Before [1]    | After [2]     |
+|------------------|------------|------------|
+| Size             | 400 MB     | 200 MB     |
+| First time build | 39 Seconds | 46 seconds |
+
+<small>[1] Assuming there was no multistage build</small>
+<small>[2] Building for production target</small>
+
 ---
 
 # Key Takeaways
@@ -845,22 +753,22 @@ jobs:
 
 # Even better
 
-- [Docker Slim](https://github.com/docker-slim/docker-slim)
-- [Dive](https://github.com/wagoodman/dive)
-- Anchore image scan
-- Devcontainer in VSCode
-- Docker Python interpreter in Pycharm
 - Common base image
 - Makefile
+- Devcontainer in VSCode
+- Docker Python interpreter in Pycharm
 
 ----
 
-# Articles
+# Articles & Tools
 
 - [Breaking Down Docker by Nawaz Siddiqui](https://kubesimplify.com/breaking-down-docker#heading-virtual-machines)
 - [Announcing Compose V2 General Availability](https://www.docker.com/blog/announcing-compose-v2-general-availability/)
 - [Caching Docker layers on serverless build hosts with multi-stage builds](https://andrewlock.net/caching-docker-layers-on-serverless-build-hosts-with-multi-stage-builds---target,-and---cache-from/)
 - [Using Alpine can make Python Docker builds 50× slower](https://pythonspeed.com/articles/alpine-docker-python/)
+- [Docker Slim](https://github.com/docker-slim/docker-slim)
+- [Dive](https://github.com/wagoodman/dive)
+- [Anchore image scan](https://github.com/anchore/anchore-engine)
 
 ---
 

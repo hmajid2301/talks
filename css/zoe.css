@@ -1,4 +1,3 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
 @import url(https://fonts.googleapis.com/css?family=Karla:400,700);
 @import url(https://fonts.googleapis.com/css?family=Libre+Caslon+Text:400,700);
 
@@ -21,7 +20,6 @@ html * {
   --r-heading-color: #2d3246;
   --r-heading-line-height: 1.2;
   --r-heading-letter-spacing: normal;
-  /* --r-heading-text-transform: uppercase; */
   --r-heading-text-shadow: none;
   --r-heading-font-weight: normal;
   --r-heading1-text-shadow: none;
@@ -35,6 +33,7 @@ html * {
   --r-link-color-hover: #78b9e6;
   --r-selection-background-color: #d33682;
   --r-selection-color: #fff;
+  --r-progress-bar-color: #4a5ec2;
 }
 
 .reveal-viewport {
@@ -343,7 +342,8 @@ html * {
  *********************************************/
 .reveal .progress {
   background: rgba(0, 0, 0, 0.2);
-  color: var(--r-link-color);
+  color: var(--r-progress-bar-color);
+  height: 0.5%;
 }
 
 /*********************************************
@@ -362,6 +362,6 @@ html * {
 }
 
 .footer img {
-  width: 10em;
+  width: 5vw;
   height: auto;
 }
