@@ -297,6 +297,14 @@ notes:
 
 ----
 
+# Summary
+
+- Dockerise the app
+- Docker dependencies (DB)
+- Use `docker compose` to manage multiple Docker containers
+
+----
+
 <img width="60%" height="auto" data-src="images/what-if-i-told-you-we-can-do-better.jpg">
 
 ---
@@ -403,6 +411,17 @@ jobs:
 
 ----
 
+# Summary
+
+- Dockerise development tasks
+  - tests
+  - linting
+  - DB migrations
+- Use Docker on CI
+  - Local environment = CI enviromnent
+
+----
+
 <img width="80%" height="auto" data-src="images/nope-we-can-do-better.jpg">
 
 ---
@@ -466,6 +485,14 @@ notes:
 | Size             | 1 GB       | 280 MB     |
 | First time build | 75 Seconds | 30 Seconds |
 | CI Pipeline Job  | 2 Minutes 40 Seconds | 1 Minute 57 Seconds  |
+
+----
+
+# Summary
+
+- Aim to user smaller base images
+- Reduce unnecessary depdencies
+- Save time during build time
 
 ----
 
@@ -739,6 +766,15 @@ jobs:
 
 <small>[1] Assuming there was no multistage build</small>
 <small>[2] Building for production target</small>
+
+----
+
+# Summary
+
+- Use multistage builds for slimmer production images
+- Use non-root users
+- Leverage SSH injection during build time
+
 
 ---
 
