@@ -41,7 +41,7 @@ RUN mv /tmp/reveal /dist/reveal
 RUN mkdir -p /dist/lib/ 
 RUN cp /usr/lib/libintl.so.8 /dist/lib/
 
-FROM node AS main
+FROM node AS production
 COPY --from=aggregator /dist /
 EXPOSE 8000
 EXPOSE 35729

@@ -11,7 +11,7 @@ build-image:
     - main
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker build --target main -t $CI_REGISTRY_IMAGE .
+    - docker build --target production -t $CI_REGISTRY_IMAGE .
     - docker push $CI_REGISTRY_IMAGE
 
 pages:

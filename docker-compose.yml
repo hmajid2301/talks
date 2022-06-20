@@ -2,7 +2,7 @@ services:
   presentation:
     build:
       context: .
-      target: main
+      target: production
       cache_from:
         - registry.gitlab.com/haseeb-slides/docker-as-a-dev-tool
     volumes:
