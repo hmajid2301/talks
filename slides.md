@@ -125,6 +125,10 @@ notes:
 
 Maps port 80 on the host to port 80 in the docker container
 
+----
+
+<img width="60%" height="auto" data-src="images/deeper.jpeg">
+
 ---
 
 # App Dependencies
@@ -223,7 +227,7 @@ services:
 # Before
 
 <pre class="stretch">
-  <code data-trim data-noescape class="bash">
+  <code data-trim data-noescape class="bash" data-line-numbers="1-16|18-23">
   # Start Commands: 
   docker network create --driver bridge workspace_network
   docker volume create  postgres_data
@@ -261,10 +265,6 @@ Equivalent docker compose vs docker comamnds
 ```
 docker compose up --build
 ```
-
-----
-
-<img width="60%" height="auto" data-src="images/deeper.jpeg">
 
 ----
 
@@ -364,7 +364,7 @@ notes:
 
 # Before
 
-```yaml [3-7|14-17|18-22|25]
+```yaml [3-7|14-17|18-21|24]
 name: Check changes on branch
 
 on:
@@ -384,9 +384,8 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install poetry=1.11.0
+          poetry install
       - name: Test with pytest
         run: |
           pytest
@@ -450,7 +449,7 @@ FROM python:3.9.8-slim
 WORKDIR $PYSETUP_PATH
 COPY pyproject.toml poetry.lock ./
 
-RUN pip install poetry==${POETRY_VERSION} && \
+RUN pip install poetry==$POETRY_VERSION && \
 	poetry install
 
 WORKDIR /app
@@ -459,7 +458,17 @@ COPY . .
 CMD [ "bash", "/app/start.sh" ]
 ```
 
----
+----
+
+# Comparison
+
+|                  | Before     | After      |
+|------------------|------------|------------|
+| Size             | 1 GB       | 280 MB     |
+| First time build | 75 Seconds | 30 Seconds |
+| CI Pipeline Job  | 2 Minutes 40 Seconds | 1 Minute 57 Seconds  |
+
+----
 
 # Alpine vs Slim
 
@@ -478,19 +487,9 @@ notes:
 
 ----
 
-# Comparison
-
-|                  | Before     | After      |
-|------------------|------------|------------|
-| Size             | 1 GB       | 280 MB     |
-| First time build | 75 Seconds | 30 Seconds |
-| CI Pipeline Job  | 2 Minutes 40 Seconds | 1 Minute 57 Seconds  |
-
-----
-
 # Summary
 
-- Aim to user smaller base images
+- Aim to use smaller base images
 - Reduce unnecessary depdencies
 - Save time during build time
 
@@ -557,7 +556,7 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 FROM base as builder
 
-RUN pip install poetry
+RUN pip install poetry==$POETRY_VERSION
 
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
@@ -713,7 +712,7 @@ RUN apt-get update && \
     apt-get install openssh-client git -y && \
     mkdir -p -m 0600 \
     ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts && \
-    pip install poetry
+    pip install poetry==$POETRY_VERSION
 
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
@@ -765,6 +764,7 @@ jobs:
 | First time build | 39 Seconds | 46 seconds |
 
 <small>[1] Assuming there was no multistage build</small>
+<br />
 <small>[2] Building for production target</small>
 
 ----

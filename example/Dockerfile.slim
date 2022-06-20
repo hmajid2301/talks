@@ -20,7 +20,7 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 WORKDIR $PYSETUP_PATH
 COPY pyproject.toml poetry.lock ./
 
-RUN pip install poetry==${POETRY_VERSION} && \
+RUN pip install poetry==$POETRY_VERSION && \
 	poetry install
 
 WORKDIR /app
