@@ -2,8 +2,8 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.basic
-      # target: production
+      dockerfile: Dockerfile.ssh
+      target: development
       cache_from:
         - registry.gitlab.com/haseeb-slides/docker-as-a-dev-tool/ssh-image
     command: bash /app/start.sh --reload

@@ -195,11 +195,12 @@ notes:
 
 ----
 
-```yaml [4|5-10|11-12|13-14|16|16-24]
+```yaml [4|5|6-11|12-13|14-15|17|17-25]
 # docker-compose.yml
 
 services:
   app:
+    command: bash /app/start.sh --reload
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_HOST=postgres
@@ -299,9 +300,10 @@ notes:
 
 # Summary
 
-- Dockerise the app
-- Docker dependencies (DB)
-- Use `docker compose` to manage multiple Docker containers
+- Dockerise your app
+- Dockerise dependencies (DB)
+- Use `docker compose` 
+  - Manage multiple containers
 
 ----
 
@@ -364,7 +366,9 @@ notes:
 
 # Before
 
-```yaml [3-7|14-17|18-21|24]
+```yaml [5-9|16-19|20-23|26]
+# .github/workflows/branch.yml
+
 name: Check changes on branch
 
 on:
@@ -490,7 +494,7 @@ notes:
 # Summary
 
 - Aim to use smaller base images
-- Reduce unnecessary depdencies
+- Reduce unnecessary dependencies
 - Save time during build time
 
 ----
@@ -534,7 +538,7 @@ Notes:
 
 # Image
 
-```dockerfile [1|20-27|23-40|41-49|43]
+```dockerfile [1|20-27|30-38|41-49|43]
 FROM python:3.9.8-slim as base
 
 ARG PYSETUP_PATH
@@ -750,6 +754,8 @@ jobs:
       - uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
+      - name: Build Image
+        run: docker compose build --ssh default
       - name: Run Tests
         run: docker compose run app pytest
 ```
@@ -771,7 +777,8 @@ jobs:
 
 # Summary
 
-- Use multistage builds for slimmer production images
+- Use multistage builds 
+  - Slimmer production images
 - Use non-root users
 - Leverage SSH injection during build time
 
