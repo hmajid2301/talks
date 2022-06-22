@@ -195,11 +195,14 @@ notes:
 
 ----
 
-```yaml [4|5|6-11|12-13|14-15|17|17-25]
+```yaml [4|5-7|8|9-14|15-16|17-18|20|20-28]
 # docker-compose.yml
 
 services:
   app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: bash /app/start.sh --reload
     environment:
       - POSTGRES_USER=postgres
@@ -450,6 +453,8 @@ So this is what I did next!
 ```Dockerfile [1]
 FROM python:3.9.8-slim
 
+# ...
+
 WORKDIR $PYSETUP_PATH
 COPY pyproject.toml poetry.lock ./
 
@@ -462,32 +467,24 @@ COPY . .
 CMD [ "bash", "/app/start.sh" ]
 ```
 
+notes:
+
+Alpine Comptability
+
 ----
 
 # Comparison
 
-|                  | Before     | After      |
-|------------------|------------|------------|
-| Size             | 1 GB       | 280 MB     |
-| First time build | 75 Seconds | 30 Seconds |
-| CI Pipeline Job  | 2 Minutes 40 Seconds | 1 Minute 57 Seconds  |
+|                 | python:3.9.8 | python:3.9.8-slim |
+|-----------------|--------------|-------------------|
+| Size            | 1 GB         | 280 MB            |
+| Build[1]        | 75 sec       | 30 sec            |
+| CI Pipeline Job | 2 min 40 sec | 1 min 57 sec      |
 
-----
 
-# Alpine vs Slim
-
-- Lack of support
-  - Standard PyPI wheels
-  - musl vs glibc
-- Image Size
-
-notes:
-
-  glibc: Standard C library 
-
-  Alpine
-    - Comptability Issues
-    - Standard PyPI wheels don’t work on Alpine
+<div style="text-align: left;margin-top: 5em;">
+  <small>[1] No Cache</small>
+</div>
 
 ----
 
@@ -640,12 +637,17 @@ notes:
 
 # Comparison
 
-|                  | Before     | After [1]     |
-|------------------|------------|------------|
-| Size             | 280 MB     | 200 MB     |
-| First time build | 30 Seconds | 35 seconds |
+|          | python:3.9.8-slim | Multistage[2] |
+|----------|-------------------|----------------|
+| Size     | 280 MB            | 200 MB         |
+| Build[1] | 30 Seconds        | 35 seconds     |
 
-<small>[1] Building for production target</small>
+
+<div style="text-align: left;margin-top: 5em;">
+  <small>[1] No Cache</small>
+  <br>
+  <small>[2] Building for production target</small>
+</div>
 
 ----
 
@@ -764,14 +766,20 @@ jobs:
 
 # Comparison
 
-|                  | Before [1]    | After [2]     |
-|------------------|------------|------------|
-| Size             | 400 MB     | 200 MB     |
-| First time build | 39 Seconds | 46 seconds |
+|          | Before[2]  | After[3]   |
+|----------|------------|------------|
+| Size     | 400 MB     | 200 MB     |
+| Build[1] | 39 Seconds | 46 seconds |
 
-<small>[1] Assuming there was no multistage build</small>
-<br />
-<small>[2] Building for production target</small>
+
+<div style="text-align: left;margin-top: 5em;">
+  <small>[1] No Cache</small>
+  <br>
+  <small>[2] Assuming there was no multistage build</small>
+  <br />
+  <small>[3] Building for production target</small>
+</div>
+
 
 ----
 
@@ -782,15 +790,14 @@ jobs:
 - Use non-root users
 - Leverage SSH injection during build time
 
-
 ---
 
-# Key Takeaways
+# What did we do?
 
-- Dockerise everything
-- Leverage Docker in CI
-- Use multi-stage builds
-  - Dev and prod images
+- Dockerised app/deps
+- Used `docker compose`
+- Use Docker for dev tasks
+- Multistage Builds
 
 ---
 
@@ -800,18 +807,6 @@ jobs:
 - Makefile
 - Devcontainer in VSCode
 - Docker Python interpreter in Pycharm
-
-----
-
-# Articles & Tools
-
-- [Breaking Down Docker by Nawaz Siddiqui](https://kubesimplify.com/breaking-down-docker#heading-virtual-machines)
-- [Announcing Compose V2 General Availability](https://www.docker.com/blog/announcing-compose-v2-general-availability/)
-- [Caching Docker layers on serverless build hosts with multi-stage builds](https://andrewlock.net/caching-docker-layers-on-serverless-build-hosts-with-multi-stage-builds---target,-and---cache-from/)
-- [Using Alpine can make Python Docker builds 50× slower](https://pythonspeed.com/articles/alpine-docker-python/)
-- [Docker Slim](https://github.com/docker-slim/docker-slim)
-- [Dive](https://github.com/wagoodman/dive)
-- [Anchore image scan](https://github.com/anchore/anchore-engine)
 
 ---
 
@@ -824,5 +819,10 @@ jobs:
 
 # Appendix 
 
-- [Arrows in Multi-stage build Image](https://www.flaticon.com/free-icons/arrow)
-- [Hand Illustration](https://www.vecteezy.com/vector-art/1777476-open-hands-up-of-different-types-of-skins)
+- [Breaking Down Docker by Nawaz Siddiqui](https://kubesimplify.com/breaking-down-docker#heading-virtual-machines)
+- [Announcing Compose V2 General Availability](https://www.docker.com/blog/announcing-compose-v2-general-availability/)
+- [Caching Docker layers on serverless build hosts with multi-stage builds](https://andrewlock.net/caching-docker-layers-on-serverless-build-hosts-with-multi-stage-builds---target,-and---cache-from/)
+- [Using Alpine can make Python Docker builds 50× slower](https://pythonspeed.com/articles/alpine-docker-python/)
+- [Docker Slim](https://github.com/docker-slim/docker-slim)
+- [Dive](https://github.com/wagoodman/dive)
+- [Anchore image scan](https://github.com/anchore/anchore-engine)
