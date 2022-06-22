@@ -213,7 +213,7 @@ services:
     volumes:
       - ./:/app
     ports:
-      - 80:80
+      - 127.0.0.1:80:80
 
   postgres:
     image: postgres:13.4
@@ -223,7 +223,7 @@ services:
       - POSTGRES_DATABASE=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
 ```
 
 ----
@@ -269,35 +269,6 @@ Equivalent docker compose vs docker comamnds
 ```
 docker compose up --build
 ```
-
-----
-
-# Port Binding
-
-```yaml [7]
-# docker-compose.yml
-
-services:
-  app:
-    # ...
-    ports:
-      - 80:80
-```
-
-----
-
-```yaml [5]
-services:
-  app:
-    # ...
-    ports:
-      - 127.0.0.1:80:80
-```
-
-notes:
-
-- Bind to host `0.0.0.0`
-- It forwards it to be accessible on every network interface on your system 
 
 ----
 
