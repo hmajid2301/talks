@@ -12,12 +12,12 @@ From Zero to Hero
 - Haseeb Majid
   - A Software Engineer
   - https://haseebmajid.dev
-- Avid 🏏 cricketer
-- I work for 🥑 ZOE 
+- I work for ZOE 🥑
   - https://joinzoe.com 
   - Personalised nutrition startup
-  - Health Study
-- 🐱 Loves cats
+  - Health study
+- Avid cricketer 🏏
+- Loves cats 🐱
 
 ---
 
@@ -235,6 +235,7 @@ services:
   # Start Commands: 
   docker network create --driver bridge workspace_network
   docker volume create  postgres_data
+  docker build -t app .
   docker run --environment "POSTGRES_USER=postgres" \
     --environment "POSTGRES_HOST=postgres" \
     --environment "POSTGRES_DATABASE=postgres" \
@@ -242,7 +243,7 @@ services:
     --environment "POSTGRES_PORT=5432" \
     --volume "./:/app" --publish "80:8080" \
     --network workspace_network --name workspace_app \
-    --detach Dockerfile
+    --detach app
   docker run --volume "postgres_data:/var/lib/postgresql/data" \
   --environment "POSTGRES_DATABASE=postgres" \
   --environment "POSTGRES_PASSWORD=postgres" \
@@ -340,7 +341,7 @@ notes:
 
 # Before
 
-```yaml [5-9|16-19|20-23|26]
+```yaml [14-22|24-28|29-33|34-40]
 # .github/workflows/branch.yml
 
 name: Check changes on branch
@@ -354,6 +355,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.9
@@ -366,7 +376,12 @@ jobs:
           poetry install
       - name: Test with pytest
         run: |
-          pytest
+        export DB_USERNAME=postgres
+        export DB_PASSWORD=postgres
+        export DB_HOST=postgres
+        export DB_PORT=5432
+        export DB_NAME=postgres
+        pytest
 ```
 
 ----
