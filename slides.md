@@ -3,6 +3,8 @@
 
 From Zero to Hero
 
+<small>by Haseeb Majid</small>
+
 <!-- .slide: data-background="#fac828" -->
 
 ---
@@ -231,7 +233,7 @@ services:
 # Before
 
 <pre class="stretch">
-  <code data-trim data-noescape class="bash" data-line-numbers="1-16|18-23">
+  <code data-trim data-noescape class="bash" data-line-numbers="1-17|18-24">
   # Start Commands: 
   docker network create --driver bridge workspace_network
   docker volume create  postgres_data
@@ -341,7 +343,7 @@ notes:
 
 # Before
 
-```yaml [14-22|24-28|29-33|34-40]
+```yaml [14-22|24-28|29-32|33-40]
 # .github/workflows/branch.yml
 
 name: Check changes on branch
@@ -730,7 +732,7 @@ docker compose build --ssh default
 
 # CI Changes
 
-```yml [9-11]
+```yml [9-11|12-13]
 # ...
 
 jobs:
