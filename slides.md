@@ -14,16 +14,40 @@ From Zero to Hero
 - Haseeb Majid
   - A Software Engineer
   - https://haseebmajid.dev
+- Avid cricketer 🏏
+- Loves cats 🐱
+
+notes:
+
+- Code & Slides shared at the end
+
+---
+
+# ZOE
+
 - I work for ZOE 🥑
   - https://joinzoe.com 
   - Personalised nutrition startup
   - Health study
-- Avid cricketer 🏏
-- Loves cats 🐱
 
----
+notes:
 
-# Who is this talk for?
+- Understand how your body responds to food
+- Allow people to contribute to research into major diseases cancer, dementia, and heart disease
+  - from covid
+
+----
+
+# CGM Trace
+
+<section>
+  <img width="30%" height="auto" data-src="images/cgm_before.jpeg">
+  <img width="30%" height="auto" data-src="images/cgm_after.jpeg">
+</section>
+
+----
+
+# Who Is This Talk For?
 
 - Have used Docker
   - But not an expert
@@ -40,10 +64,10 @@ notes:
 
 # Example Code
 
-- Simple FastAPI Web Service 
+- Simple FastAPI web-service 
   - Interacts with DB
 - It allows us to get and add new users
-- Poetry for dependency
+- Poetry for dependency management
 
 notes:
 
@@ -56,11 +80,11 @@ notes:
 
 - Reproducible builds
   - Easy setup developers
-  - OS Independent
+  - OS independent
 
 notes:
 
-- Upgrading MacOS nothing builds locally virtualenv
+- Start with this Upgrading MacOS nothing builds locally virtualenv
 - Docker daemon running
 
 ----
@@ -71,7 +95,9 @@ notes:
 
 # My First Image
 
-```Dockerfile [1|3-18|20-21|23-24|26-27|29]
+```Dockerfile [3|5-20|22-23|25-27|28-29|31]
+# Dockerfile
+
 FROM python:3.9.8
 
 ENV PYTHONUNBUFFERED=1 \
@@ -110,11 +136,9 @@ PYTHONUNBUFFERED: sent straight to terminal real time
 
 Create a new file called `Dockerfile`
 
-Used to be the example on FastAPI but since been removed
-
 ----
 
-# Let's run it
+# Let's Run It
 
 ```bash
 docker build --tag app .
@@ -125,7 +149,8 @@ docker run --publish 80:80 app
 
 notes:
 
-Maps port 80 on the host to port 80 in the docker container
+- Maps port 80 on the host to port 80 in the docker container
+- So we can access the app outside of the docker container
 
 ----
 
@@ -135,7 +160,7 @@ Maps port 80 on the host to port 80 in the docker container
 
 # App Dependencies
 
-- App depends on a Database
+- App depends on a database
   - Dockerise it
 
 
@@ -169,8 +194,43 @@ How we might have to install it like so
   --environment "POSTGRES_DATABASE=postgres" \
   --environment "POSTGRES_PASSWORD=postgres" \
   --publish "5432:5432" \
-  --detach postgres:13.4
+    postgres:13.4
 ```
+
+----
+
+<pre class="stretch">
+  <code data-trim data-noescape class="bash" data-line-numbers="1-17|18-24">
+  # Start Commands: 
+  docker network create --driver bridge workspace_network
+  docker volume create  postgres_data
+  docker build -t app .
+  docker run --environment "POSTGRES_USER=postgres" \
+    --environment "POSTGRES_HOST=postgres" \
+    --environment "POSTGRES_DATABASE=postgres" \
+    --environment "POSTGRES_PASSWORD=postgres" \
+    --environment "POSTGRES_PORT=5432" \
+    --volume "./:/app" --publish "80:8080" \
+    --network workspace_network --name workspace_app \
+    --detach app
+  docker run --volume "postgres_data:/var/lib/postgresql/data" \
+  --environment "POSTGRES_DATABASE=postgres" \
+  --environment "POSTGRES_PASSWORD=postgres" \
+  --publish "5432:5432" --network workspace_network \ 
+  --name workspace_postgres --detach postgres:13.4
+
+  # Delete Commands: 
+  docker stop workspace_app
+  docker rm workspace_app
+  docker stop workspace_postgres
+  docker rm workspace_postgres
+  docker network rm workspace_network
+  </code>
+</pre>
+
+notes:
+
+Equivalent docker compose vs docker comamnds
 
 ----
 
@@ -178,7 +238,7 @@ How we might have to install it like so
 
 ---
 
-# docker compose
+# Docker Compose
 
 - Manage multiple Docker containers
 - Existing tool `docker-compose`
@@ -228,46 +288,13 @@ services:
       - 127.0.0.1:5432:5432
 ```
 
-----
-
-# Before
-
-<pre class="stretch">
-  <code data-trim data-noescape class="bash" data-line-numbers="1-17|18-24">
-  # Start Commands: 
-  docker network create --driver bridge workspace_network
-  docker volume create  postgres_data
-  docker build -t app .
-  docker run --environment "POSTGRES_USER=postgres" \
-    --environment "POSTGRES_HOST=postgres" \
-    --environment "POSTGRES_DATABASE=postgres" \
-    --environment "POSTGRES_PASSWORD=postgres" \
-    --environment "POSTGRES_PORT=5432" \
-    --volume "./:/app" --publish "80:8080" \
-    --network workspace_network --name workspace_app \
-    --detach app
-  docker run --volume "postgres_data:/var/lib/postgresql/data" \
-  --environment "POSTGRES_DATABASE=postgres" \
-  --environment "POSTGRES_PASSWORD=postgres" \
-  --publish "5432:5432" --network workspace_network \ 
-  --name workspace_postgres --detach postgres:13.4
-
-  # Delete Commands: 
-  docker stop workspace_app
-  docker rm workspace_app
-  docker stop workspace_postgres
-  docker rm workspace_postgres
-  docker network rm workspace_network
-  </code>
-</pre>
-
 notes:
 
-Equivalent docker compose vs docker comamnds
+- env variables 12 factor app
 
 ----
 
-# After
+# Run It!!!
 
 ```
 docker compose up --build
@@ -286,13 +313,17 @@ docker compose up --build
 
 <img width="60%" height="auto" data-src="images/what-if-i-told-you-we-can-do-better.jpg">
 
+notes:
+
+- lets pretend we want to run tests
+
 ---
 
 # Running Tests
 
 - Run tests in Docker
   - `pytest` runner
-- Consistent Environment
+- Consistent environment
 
 notes:
 
@@ -300,7 +331,6 @@ notes:
 - Different environments
 - Different dependencies locally and CI or production
 - Imagine postgres version
-- Seek files
 
 ----
 
@@ -308,7 +338,9 @@ notes:
 docker compose run app pytest
 ```
 
-```yaml [6-8|10]
+```yaml [8-9|12]
+# docker-compose.yml
+
 services:
  app:
     build:
@@ -343,7 +375,7 @@ notes:
 
 # Before
 
-```yaml [14-22|24-28|29-32|33-40]
+```yaml [3|14-22|24-28|29-32|33-40]
 # .github/workflows/branch.yml
 
 name: Check changes on branch
@@ -388,8 +420,12 @@ jobs:
 
 ----
 
+# After
 
-```yaml [11]
+
+```yaml [13]
+# .github/workflows/branch.yml
+
 name: Check changes on branch
 
 #...
@@ -408,8 +444,8 @@ jobs:
 # Summary
 
 - Dockerise development tasks
-  - tests
-  - linting
+  - Tests
+  - Linting
   - DB migrations
 - Use Docker on CI
   - Local environment = CI enviromnent
@@ -420,10 +456,11 @@ jobs:
 
 ---
 
-# Smaller image
+# Smaller Image
 
 - Image is large 
-- Redundant Deps
+- Redundant dependencies
+- Fewer security vectors
 - Less storage
 
 notes:
@@ -438,7 +475,9 @@ So this is what I did next!
 
 ----
 
-```Dockerfile [1]
+```Dockerfile [3]
+# Dockerfile
+
 FROM python:3.9.8-slim
 
 # ...
@@ -473,6 +512,10 @@ Alpine Comptability
 <div style="text-align: left;margin-top: 1em;">
   <small>[1] No Cache</small>
 </div>
+
+notes:
+
+- Say exact values
 
 ----
 
@@ -523,7 +566,9 @@ Notes:
 
 # Image
 
-```dockerfile [1|20-27|30-38|41-49|43]
+```dockerfile [3|22-29|32-40|43-51|45]
+#Dockerfile
+
 FROM python:3.9.8-slim as base
 
 ARG PYSETUP_PATH
@@ -578,7 +623,9 @@ CMD ["bash", "/app/start.sh"]
 
 ----
 
-```yaml [4-6]
+```yaml [6-8]
+# docker-compose.yml
+
 services:
   app:
     build:
@@ -599,9 +646,27 @@ services:
 
 ----
 
+# Comparison
+
+|          | python:3.9.8-slim | Multistage[2] |
+|----------|-------------------|----------------|
+| Size     | 280 MB            | 200 MB         |
+| Build[1] | 30 Seconds        | 35 seconds     |
+
+
+<div style="text-align: left;margin-top: 2em;">
+  <small>[1] No Cache</small>
+  <br>
+  <small>[2] Building for production target</small>
+</div>
+
+----
+
 # !Root
 
-```dockerfile [3-5|7]
+```dockerfile [5-7|9]
+# Dockerfile
+
 FROM base as production
 
 RUN addgroup --gid 1000 --system app \
@@ -623,25 +688,11 @@ notes:
 
 ----
 
-# Comparison
-
-|          | python:3.9.8-slim | Multistage[2] |
-|----------|-------------------|----------------|
-| Size     | 280 MB            | 200 MB         |
-| Build[1] | 30 Seconds        | 35 seconds     |
-
-
-<div style="text-align: left;margin-top: 2em;">
-  <small>[1] No Cache</small>
-  <br>
-  <small>[2] Building for production target</small>
-</div>
-
-----
-
 # Cache From
 
-```yaml [6-7]
+```yaml [8-9]
+# docker-compose.yml
+
 services:
   app:
     build:
@@ -670,6 +721,8 @@ notes:
 notes:
 
 Can we inject an ssh key only during build time
+Running PyPI is heavy
+Low cost setup
 
 ----
 
@@ -682,20 +735,24 @@ notes:
 ----
 
 ```bash
-poetry add git+ssh@gitlab.com:banter-bus/omnibus.git
+poetry add git+ssh@github.com:zoe/pubsub.git
 ```
 
 ```toml [4-5]
   [tool.poetry.dependencies]
   python = "^3.9"
   fastapi = "^0.70.0"
-  omnibus = { git = "ssh://git@gitlab.com:banter-bus/omnibus.git",
+  pubsub = { git = "ssh://git@github.com:zoe/pubsub.git",
               rev = "0.2.5" }
   psycopg2-binary = "^2.9.3"
   SQLAlchemy = "^1.4.36"
   uvicorn = "^0.17.6"
 ```
 
+
+notes:
+
+- Library to listen to events to create users
 
 ----
 
@@ -733,7 +790,7 @@ docker compose build --ssh default
 # CI Changes
 
 ```yml [9-11|12-13]
-# ...
+# .github/workflows/branch.yml
 
 jobs:
   # ...
@@ -754,7 +811,7 @@ jobs:
 
 # Comparison
 
-|          | Before[2]  | After[3]   |
+|          | python:3.9.8-slim[2]  | Multistage[3]   |
 |----------|------------|------------|
 | Size     | 400 MB     | 200 MB     |
 | Build[1] | 39 Seconds | 46 seconds |
@@ -768,6 +825,10 @@ jobs:
   <small>[3] Building for production target</small>
 </div>
 
+notes:
+
+- Assuming we have no multistage build
+
 
 ----
 
@@ -780,7 +841,7 @@ jobs:
 
 ---
 
-# What did we do?
+# What Did We Do?
 
 - Dockerised app/deps
 - Used `docker compose`
@@ -789,7 +850,7 @@ jobs:
 
 ---
 
-# Even better
+# Even Better
 
 - Common base image
 - Makefile
@@ -814,3 +875,21 @@ jobs:
 - [Docker Slim](https://github.com/docker-slim/docker-slim)
 - [Dive](https://github.com/wagoodman/dive)
 - [Anchore image scan](https://github.com/anchore/anchore-engine)
+
+<!--
+
+
+Tighten up the mission statement - Ask Georgia to write the intro?? 
+ - Maybe start with what you're trying to achieve? e.g. You're trying to bring up a python based API that serves cricket test matches from the last 100 years. 
+Do you need to explain these? 
+
+
+Things to skip / or explain why 
+ - You said 3 times "for those of you who don't know". Try not to say that. 
+ - Show the delta between size and build time. Be presise. Say "It was 50% faster / 200mb reduction". Don't say: "It was much faster" 
+
+
+ - reconsider colours code solarized 
+ - multistage image
+
+>
