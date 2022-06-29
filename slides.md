@@ -117,8 +117,8 @@ Used to be the example on FastAPI but since been removed
 # Let's run it
 
 ```bash
-docker build -t app .
-docker run -p 80:80 app
+docker build --tag app .
+docker run --publish 80:80 app
 
 # Access app on http://localhost
 ```
@@ -470,7 +470,7 @@ Alpine Comptability
 | CI Pipeline Job | 2 min 40 sec | 1 min 57 sec      |
 
 
-<div style="text-align: left;margin-top: 5em;">
+<div style="text-align: left;margin-top: 1em;">
   <small>[1] No Cache</small>
 </div>
 
@@ -631,7 +631,7 @@ notes:
 | Build[1] | 30 Seconds        | 35 seconds     |
 
 
-<div style="text-align: left;margin-top: 5em;">
+<div style="text-align: left;margin-top: 2em;">
   <small>[1] No Cache</small>
   <br>
   <small>[2] Building for production target</small>
@@ -760,7 +760,7 @@ jobs:
 | Build[1] | 39 Seconds | 46 seconds |
 
 
-<div style="text-align: left;margin-top: 5em;">
+<div style="text-align: left;margin-top: 1em;">
   <small>[1] No Cache</small>
   <br>
   <small>[2] Assuming there was no multistage build</small>
