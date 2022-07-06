@@ -45,6 +45,10 @@ notes:
   <img width="30%" height="auto" data-src="images/cgm_after.jpeg">
 </section>
 
+notes:
+
+- Breathe
+
 ----
 
 # Who Is This Talk For?
@@ -86,6 +90,7 @@ notes:
 
 - Start with this Upgrading MacOS nothing builds locally virtualenv
 - Docker daemon running
+- Easier to upgrade to new python versions
 
 ----
 
@@ -134,7 +139,7 @@ notes:
 PYTHONDONTWRITEBYTECODE: prevents writing out pyc files
 PYTHONUNBUFFERED: sent straight to terminal real time
 
-Create a new file called `Dockerfile`
+Create a new file called Dockerfile
 
 ----
 
@@ -228,22 +233,22 @@ How we might have to install it like so
   </code>
 </pre>
 
-notes:
-
-Equivalent docker compose vs docker comamnds
-
 ----
 
 <img width="80%" height="auto" data-src="images/do-better.png">
+
+notes:
+
+- Thinking is there a better way as a dev
 
 ---
 
 # Docker Compose
 
 - Manage multiple Docker containers
-- Existing tool `docker-compose`
-  - V2 called `docker compose`
-- Use `docker compose` today
+- Existing tool docker-compose
+  - V2 called docker compose
+- Use docker compose today
 
 
 notes:
@@ -291,6 +296,7 @@ services:
 notes:
 
 - env variables 12 factor app
+- postgres host matches service name
 
 ----
 
@@ -306,7 +312,7 @@ docker compose up --build
 
 - Dockerise your app
 - Dockerise dependencies (DB)
-- Use `docker compose` 
+- Use docker compose
   - Manage multiple containers
 
 ----
@@ -322,7 +328,7 @@ notes:
 # Running Tests
 
 - Run tests in Docker
-  - `pytest` runner
+  - pytest runner
 - Consistent environment
 
 notes:
@@ -423,7 +429,7 @@ jobs:
 # After
 
 
-```yaml [13]
+```yaml [14]
 # .github/workflows/branch.yml
 
 name: Check changes on branch
@@ -435,6 +441,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v3
       - name: Run Tests
         run: docker compose run app pytest
 ```
@@ -453,6 +460,10 @@ jobs:
 ----
 
 <img width="80%" height="auto" data-src="images/nope-we-can-do-better.jpg">
+
+notes:
+
+- Bob is like CI is a bit slow, is there way we can speed it up
 
 ---
 
@@ -534,7 +545,7 @@ notes:
 # Dependencies
 
 - Dev dependencies in Docker image
-  - Don't need `pytest` in prod
+  - Don't need pytest in prod
 
 notes:
 
@@ -559,15 +570,16 @@ Notes:
 
 Notes:
 
-- Multiple `FROM` statements
+- Multiple FROM statements
 - Copy build artefacts from a previous stage
+- Build deps vs run deps
 
 ----
 
 # Image
 
 ```dockerfile [3|22-29|32-40|43-51|45]
-#Dockerfile
+# Dockerfile
 
 FROM python:3.9.8-slim as base
 
@@ -684,7 +696,7 @@ notes:
 - Don't want to run as root
 - Reduces chance of exploit
 - Most applications don't need root permissions
-- After this all commands are run as `app` user
+- After this all commands are run as app user
 
 ----
 
@@ -720,13 +732,13 @@ notes:
 
 notes:
 
-Can we inject an ssh key only during build time
-Running PyPI is heavy
-Low cost setup
+- New requirements, event based create new user
+- Can we inject an ssh key only during build time
+- Running PyPI is heavy
 
 ----
 
-<img width="80%" height="auto" data-src="images/anakin-ssh.webp" />
+<img width="70%" height="auto" data-src="images/anakin-ssh.webp" />
 
 notes:
 
@@ -789,7 +801,7 @@ docker compose build --ssh default
 
 # CI Changes
 
-```yml [9-11|12-13]
+```yml [1|9-11|12-13]
 # .github/workflows/branch.yml
 
 jobs:
@@ -844,9 +856,9 @@ notes:
 # What Did We Do?
 
 - Dockerised app/deps
-- Used `docker compose`
-- Use Docker for dev tasks
-- Multistage Builds
+- Used docker compose
+- Used Docker for dev tasks
+- Multistage builds
 
 ---
 
@@ -875,21 +887,3 @@ notes:
 - [Docker Slim](https://github.com/docker-slim/docker-slim)
 - [Dive](https://github.com/wagoodman/dive)
 - [Anchore image scan](https://github.com/anchore/anchore-engine)
-
-<!--
-
-
-Tighten up the mission statement - Ask Georgia to write the intro?? 
- - Maybe start with what you're trying to achieve? e.g. You're trying to bring up a python based API that serves cricket test matches from the last 100 years. 
-Do you need to explain these? 
-
-
-Things to skip / or explain why 
- - You said 3 times "for those of you who don't know". Try not to say that. 
- - Show the delta between size and build time. Be presise. Say "It was 50% faster / 200mb reduction". Don't say: "It was much faster" 
-
-
- - reconsider colours code solarized 
- - multistage image
-
->
