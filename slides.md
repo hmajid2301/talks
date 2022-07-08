@@ -14,8 +14,8 @@ From Zero to Hero
 - Haseeb Majid
   - A Software Engineer
   - https://haseebmajid.dev
-- Avid cricketer 🏏
 - Loves cats 🐱
+- Avid cricketer 🏏 #BazBall
 
 notes:
 
