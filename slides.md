@@ -564,7 +564,7 @@ Then I did this:
 
 # Multistage Builds
 
-<img width="80%" height="auto" data-src="images/hands_up.jpg">
+<img width="80%" height="auto" data-src="images/hands_up.png">
 
 Notes:
 
@@ -902,7 +902,8 @@ notes:
 
 - [Container meme from](https://turnoff.us/)
 - [Memes generated at](https://imgflip.co)
-- [Hand Illustration](https://www.flaticon.com/)
+- [Hand illustration](https://www.istockphoto.com/illustrations/hands-up/)
+- <a href="https://www.vecteezy.com/free-vector/people-hands-up">People Hands Up Vectors by Vecteezy</a>
 - [FlatIcon](https://flaticon.com)
   - <a href="https://www.flaticon.com/free-icons/box" title="box icons">Box icons created by Freepik - Flaticon</a>
   - <a href="https://www.flaticon.com/free-icons/arrow" title="arrow icons">Arrow icons created by rang - Flaticon</a>
