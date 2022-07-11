@@ -7,19 +7,21 @@ From Zero to Hero
 
 <!-- .slide: data-background="#fac828" -->
 
+
+notes:
+
+- Presentation in Docker
+- Code & Slides shared at the end
+
 ---
 
 # About Me
 
 - Haseeb Majid
-  - A Software Engineer
+  - A software engineer
   - https://haseebmajid.dev
 - Loves cats 🐱
 - Avid cricketer 🏏 #BazBall
-
-notes:
-
-- Code & Slides shared at the end
 
 ---
 
@@ -27,7 +29,7 @@ notes:
 
 - I work for ZOE 🥑
   - https://joinzoe.com 
-  - Personalised nutrition startup
+  - Personalised nutrition product
   - Health study
 
 notes:
@@ -38,11 +40,11 @@ notes:
 
 ----
 
-# CGM Trace
+# My Blood Sugar Levels
 
 <section>
-  <img width="30%" height="auto" data-src="images/cgm_before.jpeg">
-  <img width="30%" height="auto" data-src="images/cgm_after.jpeg">
+  <img width="30%" height="auto" data-src="images/cgm_before.jpg">
+  <img width="30%" height="auto" data-src="images/cgm_after.jpg">
 </section>
 
 notes:
@@ -94,7 +96,7 @@ notes:
 
 ----
 
-<img width="80%" height="auto" data-src="images/works-on-my-machine.jpeg">
+<img width="80%" height="auto" data-src="images/my_machine.jpg">
 
 ---
 
@@ -159,7 +161,7 @@ notes:
 
 ----
 
-<img width="60%" height="auto" data-src="images/deeper.jpeg">
+<img width="60%" height="auto" data-src="images/one_container.jpg">
 
 ---
 
@@ -235,7 +237,7 @@ How we might have to install it like so
 
 ----
 
-<img width="80%" height="auto" data-src="images/do-better.png">
+<img width="80%" height="auto" data-src="images/do_better.jpg">
 
 notes:
 
@@ -262,7 +264,7 @@ notes:
 
 ----
 
-```yaml [4|5-7|8|9-14|15-16|17-18|20|20-28]
+```yaml [4|5-7|8|9-10|11-16|17-18|20|20-28]
 # docker-compose.yml
 
 services:
@@ -271,14 +273,14 @@ services:
       context: .
       dockerfile: Dockerfile
     command: bash /app/start.sh --reload
+    volumes:
+      - ./:/app
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_HOST=postgres
       - POSTGRES_DATABASE=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_PORT=5432
-    volumes:
-      - ./:/app
     ports:
       - 127.0.0.1:80:80
 
@@ -315,9 +317,14 @@ docker compose up --build
 - Use docker compose
   - Manage multiple containers
 
+notes:
+
+- What we did so far ?
+  - to sumamrise this section
+
 ----
 
-<img width="60%" height="auto" data-src="images/what-if-i-told-you-we-can-do-better.jpg">
+<img width="60%" height="auto" data-src="images/what_if_better.jpg">
 
 notes:
 
@@ -459,7 +466,7 @@ jobs:
 
 ----
 
-<img width="80%" height="auto" data-src="images/nope-we-can-do-better.jpg">
+<img width="80%" height="auto" data-src="images/grumpy_do_better.jpg">
 
 notes:
 
@@ -469,9 +476,8 @@ notes:
 
 # Smaller Image
 
-- Image is large 
-- Redundant dependencies
-- Fewer security vectors
+- Remove redundant dependencies
+  - Fewer security vectors
 - Less storage
 
 notes:
@@ -533,12 +539,12 @@ notes:
 # Summary
 
 - Aim to use smaller base images
-- Reduce unnecessary dependencies
-- Save time during build time
+- Remove unnecessary dependencies
+- Reduce build time
 
 ----
 
-<img width="80%" height="auto" data-src="images/improvement.jpeg">
+<img width="80%" height="auto" data-src="images/oooh_improvement.jpg">
 
 ---
 
@@ -558,7 +564,7 @@ Then I did this:
 
 # Multistage Builds
 
-<img width="80%" height="auto" data-src="images/hands-up.jpg">
+<img width="80%" height="auto" data-src="images/hands_up.jpg">
 
 Notes:
 
@@ -566,7 +572,7 @@ Notes:
 
 ----
 
-<img width="150%" height="auto" data-src="images/build.jpg">
+<img width="75%" height="auto" data-src="images/multistage.png">
 
 Notes:
 
@@ -575,8 +581,6 @@ Notes:
 - Build deps vs run deps
 
 ----
-
-# Image
 
 ```dockerfile [3|22-29|32-40|43-51|45]
 # Dockerfile
@@ -738,7 +742,7 @@ notes:
 
 ----
 
-<img width="70%" height="auto" data-src="images/anakin-ssh.webp" />
+<img width="70%" height="auto" data-src="images/ssh.jpg" />
 
 notes:
 
@@ -871,19 +875,36 @@ notes:
 
 ---
 
-# Any Questions ?
+# Any Questions?
 
 - Code: https://gitlab.com/haseeb-slides/docker-as-a-dev-tool
 - Slides: https://docker-as-a-dev-tool.haseebmajid.dev/
 
 ----
 
-# Appendix 
+# Extra Reading
 
 - [Breaking Down Docker by Nawaz Siddiqui](https://kubesimplify.com/breaking-down-docker#heading-virtual-machines)
 - [Announcing Compose V2 General Availability](https://www.docker.com/blog/announcing-compose-v2-general-availability/)
 - [Caching Docker layers on serverless build hosts with multi-stage builds](https://andrewlock.net/caching-docker-layers-on-serverless-build-hosts-with-multi-stage-builds---target,-and---cache-from/)
 - [Using Alpine can make Python Docker builds 50× slower](https://pythonspeed.com/articles/alpine-docker-python/)
-- [Docker Slim](https://github.com/docker-slim/docker-slim)
+
+----
+
+# Useful Tools
+
 - [Dive](https://github.com/wagoodman/dive)
 - [Anchore image scan](https://github.com/anchore/anchore-engine)
+
+----
+
+# Appendix
+
+- [Container meme from](https://turnoff.us/)
+- [Memes generated at](https://imgflip.co)
+- [Hand Illustration](https://www.flaticon.com/)
+- [FlatIcon](https://flaticon.com)
+  - <a href="https://www.flaticon.com/free-icons/box" title="box icons">Box icons created by Freepik - Flaticon</a>
+  - <a href="https://www.flaticon.com/free-icons/arrow" title="arrow icons">Arrow icons created by rang - Flaticon</a>
+  - <a href="https://www.flaticon.com/free-icons/One" title="two icons">One icons created by Hight Quality Icons - Flaticon</a>
+  - <a href="https://www.flaticon.com/free-icons/two" title="two icons">Two icons created by Hight Quality Icons - Flaticon</a>
