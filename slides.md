@@ -35,7 +35,7 @@ notes:
 notes:
 
 - Understand how your body responds to food
-- Allow people to contribute to research into major diseases cancer, dementia, and heart disease
+- Use the power of community science to tackle global health issues
   - from covid
 
 ----
@@ -50,6 +50,9 @@ notes:
 notes:
 
 - Breathe
+- Unpleasant symptoms like crashing, hunger, fatigue
+- Using Docker at ZOE
+  - Next level
 
 ----
 
@@ -85,7 +88,7 @@ notes:
 # Why Docker?
 
 - Reproducible builds
-  - Easy setup developers
+  - Easy setup for developers
   - OS independent
 
 notes:
@@ -96,7 +99,7 @@ notes:
 
 ----
 
-<img width="80%" height="auto" data-src="images/my_machine.jpg">
+<img width="80%" height="auto" data-src="images/my_container.jpeg">
 
 ---
 
@@ -161,7 +164,7 @@ notes:
 
 ----
 
-<img width="60%" height="auto" data-src="images/one_container.jpg">
+<img width="80%" height="auto" data-src="images/one_container.jpg">
 
 ---
 
@@ -304,8 +307,12 @@ notes:
 
 # Run It!!!
 
-```
+```bash
 docker compose up --build
+```
+
+```bash
+docker compose down
 ```
 
 ----
@@ -324,7 +331,7 @@ notes:
 
 ----
 
-<img width="60%" height="auto" data-src="images/what_if_better.jpg">
+<img width="80%" height="auto" data-src="images/what_if_better.jpg">
 
 notes:
 
@@ -382,7 +389,7 @@ notes:
 
 ----
 
-<img width="80%" height="auto" data-src="images/say-it-one-more-time.jpeg">
+<img width="70%" height="auto" data-src="images/my_machine.jpg">
 
 ----
 
@@ -431,6 +438,10 @@ jobs:
         pytest
 ```
 
+notes:
+
+- github actions
+
 ----
 
 # After
@@ -466,7 +477,7 @@ jobs:
 
 ----
 
-<img width="80%" height="auto" data-src="images/grumpy_do_better.jpg">
+<img width="45%" height="auto" data-src="images/grumpy_do_better.jpg">
 
 notes:
 
@@ -544,7 +555,7 @@ notes:
 
 ----
 
-<img width="80%" height="auto" data-src="images/oooh_improvement.jpg">
+<img width="70%" height="auto" data-src="images/pepe_silvia.jpg">
 
 ---
 
@@ -678,32 +689,6 @@ services:
 
 ----
 
-# !Root
-
-```dockerfile [5-7|9]
-# Dockerfile
-
-FROM base as production
-
-RUN addgroup --gid 1000 --system app \
-    && adduser --no-create-home --shell \
-    /bin/false --disabled-password --uid 1000 --system --group app
-
-USER app
-COPY --from=builder $VENV_PATH $VENV_PATH
-
-# ...
-```
-
-notes:
-
-- Don't want to run as root
-- Reduces chance of exploit
-- Most applications don't need root permissions
-- After this all commands are run as app user
-
-----
-
 # Cache From
 
 ```yaml [8-9]
@@ -742,7 +727,7 @@ notes:
 
 ----
 
-<img width="70%" height="auto" data-src="images/ssh.jpg" />
+<img width="60%" height="auto" data-src="images/ssh.jpg" />
 
 notes:
 
@@ -805,7 +790,8 @@ docker compose build --ssh default
 
 # CI Changes
 
-```yml [1|9-11|12-13]
+<pre class="stretch">
+  <code data-trim data-noescape class="yaml" data-line-numbers=" 1|9-11|12-13">
 # .github/workflows/branch.yml
 
 jobs:
@@ -821,7 +807,8 @@ jobs:
         run: docker compose build --ssh default
       - name: Run Tests
         run: docker compose run app pytest
-```
+  </code>
+</pre>
 
 ----
 
@@ -852,8 +839,8 @@ notes:
 
 - Use multistage builds 
   - Slimmer production images
-- Use non-root users
-- Leverage SSH injection during build time
+- Leverage SSH injection
+  - During build time
 
 ---
 
