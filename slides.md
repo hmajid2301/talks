@@ -791,7 +791,7 @@ docker compose build --ssh default
 # CI Changes
 
 <pre class="stretch">
-  <code data-trim data-noescape class="yaml" data-line-numbers=" 1|9-11|12-13">
+  <code data-trim data-noescape class="yaml" data-line-numbers=" 9-11|12-13">
 # .github/workflows/branch.yml
 
 jobs:
