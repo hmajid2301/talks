@@ -1,17 +1,8 @@
-# My Journey Using Docker as a Development Tool
+# Talks
 
-Code + slides for conference talk.
+Code + slides for all of my talks
 
-## Getting Started
-
-To launch the presentation. You can edit locally and the live-reloader
-will handle updating the slides automatically.
-
-```
-make start
-
-# Go to http://localhost:8000
-```
+- [My Journey Using Docker as a Development Tool](https://docker-as-a-dev-tool.haseebmajid.dev)
 
 ## Appendix
 

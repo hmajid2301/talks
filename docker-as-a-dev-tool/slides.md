@@ -864,7 +864,7 @@ notes:
 
 # Any Questions?
 
-- Code: https://gitlab.com/haseeb-slides/docker-as-a-dev-tool
+- Code: https://gitlab.com/hmajid2301/talks/docker-as-a-dev-tool
 - Slides: https://docker-as-a-dev-tool.haseebmajid.dev/
 
 ----
