@@ -1,0 +1,49 @@
+stages:
+  - build
+  - combine
+  - pages
+
+build-image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  only:
+    - main
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - cd $TALK
+    - docker build --target production -t "$CI_REGISTRY_IMAGE/$TALK" .
+    - docker push "$CI_REGISTRY_IMAGE/$TALK"
+  parallel:
+    matrix:
+      - TALK: ["docker-as-a-dev-tool", "an-intro-to-pocketbase"]
+
+combine:
+  image: "$CI_REGISTRY_IMAGE/$TALK"
+  stage: combine
+  only:
+    - main
+  script:
+    - mkdir -p public/$TALK
+    - mv /reveal/* public/$TALK
+    - mv main/* public/
+  artifacts:
+    paths:
+      - public
+  parallel:
+    matrix:
+      - TALK: ["docker-as-a-dev-tool", "an-intro-to-pocketbase"]
+
+pages:
+  stage: pages
+  only:
+    - main
+  script:
+    - ls -al public/
+  dependencies:
+    - "combine: [docker-as-a-dev-tool]"
+    - "combine: [an-intro-to-pocketbase]"
+  artifacts:
+    paths:
+      - public

@@ -1,0 +1,16 @@
+services:
+  presentation:
+    build:
+      context: .
+      target: production
+      cache_from:
+        - registry.gitlab.com/hmajid2301/talks/an-intro-to-pocketbase
+    volumes:
+      - ./index.html:/reveal/index.html
+      - ./css/dracula.css:/reveal/dist/dracula.css
+      - ./css/code.css:/reveal/dist/code.css
+      - ./slides.md:/reveal/slides.md
+      - ./images/:/reveal/images/
+    ports:
+      - 127.0.0.1:8000:8000
+      - 127.0.0.1:35729:35729
