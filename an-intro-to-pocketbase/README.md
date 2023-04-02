@@ -12,3 +12,15 @@ make start
 
 # Go to http://localhost:8000
 ```
+
+### Example Code
+
+```bash
+cd example
+
+go run main.go serve
+# go to http://localhost:8090/_/
+```
+
+Email: test@example.com
+Password: test123411

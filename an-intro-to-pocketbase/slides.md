@@ -38,7 +38,7 @@ notes:
 
 ----
 
-![I don't understand](images/firebase-supabase.webp)
+![I don't understand](images/firebase-supabase.jpg)
 
 ----
 
@@ -61,6 +61,10 @@ Handle the basic repetitive tasks:
 - Easy to use Dashboard (UI)
   - Written in Svelte
 
+notes:
+
+- Scale can handle 10k connections on $6 VPS (Hetzner 2vCPU, 4GB RAM)
+
 ---
 
 ## Terminology
@@ -68,7 +72,7 @@ Handle the basic repetitive tasks:
 - Collection: Is a SQLite table
 - Record: Is a single entry in a collection
 
----
+----
 
 ## Demo
 
@@ -132,7 +136,7 @@ import (
 ...
 
 app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-    e.Router.GET("/hello", handler, middlewares)
+    e.Router.POST("/hello", handler, middlewares)
     return nil
 })
 ```
@@ -140,6 +144,20 @@ app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 notes:
 
 - echo V5 server
+
+----
+
+```go
+app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+    e.Router.POST("/hello", func(c echo.Context) error {
+        return c.NoContent(http.StatusCreated)
+    },
+        apis.ActivityLogger(app),
+        apis.RequireRecordAuth(),
+    )
+    return nil
+})
+```
 
 ---
 
@@ -153,7 +171,6 @@ const pb = new PocketBase('http://127.0.0.1:8090');
 await pb.send("/hello", {
     // for all possible options check
     // https://developer.mozilla.org/en-US/docs/Web/API/fetch#options
-    query: { "abc": 123 },
 });
 ```
 
@@ -161,8 +178,71 @@ await pb.send("/hello", {
 
 ## Database
 
+- SQLite
+- Production?
+  - Write-Ahead Logging (WAL mode)
+
+notes:
+
+- 
+
+----
+
+## What is WAL Mode?
+
+![WAL Mode Animation](images/wal_animation.gif)
+
+----
+
+## Why use WAL Mode? 
+
+- Is significantly faster in most scenarios. 
+     - Fewer writes
+- WAL uses many fewer `fsync()` operations
+  - POSIX system call `fsync()` commits buffered data to permanent storage or disk
+  - `fsync()` is expensive
+- Provides more concurrency as readers do not block writers and a writer does not block readers.
+
+
+notes:
+
+- No network file support
+- Not atomic when commits across separate DB's
+- Might be slightly slower 1-2% for read heavy and very rare write apps
+
+----
+
 ```go
 record, err := app.Dao().FindRecordById("comments", "RECORD_ID")
+```
+
+----
+
+```go [6-8|11-15|16-18]
+// ...
+import 	"github.com/pocketbase/pocketbase/models"
+
+app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+    e.Router.POST("/hello", func(c echo.Context) error {
+        collection, err := app.Dao().FindCollectionByNameOrId("comments")
+        if err != nil {
+            return err
+        }
+
+        record := models.NewRecord(collection)
+        record.Set("post", "<postid>")
+        record.Set("user", "<userid>")
+        record.Set("message", "Hi 👋, London Gophers!")
+
+        if err := app.Dao().SaveRecord(record); err != nil {
+            return err
+        }
+        return c.NoContent(http.StatusCreated)
+    },
+    // ...
+    )
+    return nil
+})
 ```
 
 ---
@@ -172,6 +252,8 @@ record, err := app.Dao().FindRecordById("comments", "RECORD_ID")
 ![Expand DB Schema](images/expand.png)
 
 ----
+
+## Client
 
 ```js
 pb.collection("comments").getList(1, 30, {
@@ -234,17 +316,10 @@ func main() {
 }
 ```
 
-> When you deploy the final executable on your production server, the new migrations will be auto applied with the start of the application.
-
 ---
 
 ## Testing
 
-```bash
-./pocketbase serve --dir="./test_pb_data"
-```
-
-----
 
 ```go
 package main
@@ -314,12 +389,19 @@ func generateRecordToken(collectionNameOrId string, email string) (string, error
 }
 ```
 
+----
+
+```bash
+./pocketbase serve --dir="./test_pb_data"
+```
+
 ---
 
 ## Caveats
 
-- Not stable API
-- Scale?
+- Need to self-host
+- Does not have a stable API yet
+- Can only scale vertically
 
 ---
 
@@ -335,3 +417,4 @@ func generateRecordToken(collectionNameOrId string, email string) (string, error
 - [PocketBase](https://pocketbase.io/docs/)
 - [Awesome PocketBase](https://github.com/benallfree/awesome-pocketbase)
 - [Fireship Video on PocketBase](https://www.youtube.com/watch?v=Wqy3PBEglXQ)
+- [WAL Mode Explained](https://www.youtube.com/watch?v=86jnwSU1F6Q)
