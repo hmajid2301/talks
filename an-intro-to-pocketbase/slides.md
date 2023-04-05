@@ -321,7 +321,7 @@ func main() {
 ## Testing
 
 
-```go
+```go [34-55|58-61]
 package main
 
 import (
@@ -356,14 +356,14 @@ func TestHelloEndpoint(t *testing.T) {
 
     scenarios := []tests.ApiScenario{
         {
-            Name:   "try as authenticated admin",
-            Method: http.MethodGet,
+            Name:   "try to get response",
+            Method: http.MethodPost,
             Url:    "/hello",
             RequestHeaders: map[string]string{
-                "Authorization": adminToken,
+                "Authorization": generateRecordToken,
             },
-            ExpectedStatus:  200,
-            ExpectedContent: []string{"Hello world!"},
+            ExpectedStatus:  201,
+            ExpectedContent: nil,
             TestAppFactory:  setupTestApp,
         },
     }
