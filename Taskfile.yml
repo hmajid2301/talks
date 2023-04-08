@@ -1,0 +1,9 @@
+version: "3"
+
+includes:
+  pocketbase_presentation:
+    taskfile: ./an-intro-to-pocketbase/Taskfile.yml
+    dir: ./an-intro-to-pocketbase
+  docker_presentation:
+    taskfile: ./docker-as-a-dev-tool/Taskfile.yml
+    dir: ./docker-as-a-dev-tool

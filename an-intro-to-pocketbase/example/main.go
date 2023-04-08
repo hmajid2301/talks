@@ -19,11 +19,14 @@ func main() {
 		Automigrate: true,
 	})
 
-	err := app.Bootstrap()
-	if err != nil {
+	bindAppHooks(app)
+
+	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
+}
 
+func bindAppHooks(app core.App) {
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 		e.Router.POST("/hello", func(c echo.Context) error {
 			collection, err := app.Dao().FindCollectionByNameOrId("comments")
@@ -46,8 +49,4 @@ func main() {
 		)
 		return nil
 	})
-
-	if err := app.Start(); err != nil {
-		log.Fatal(err)
-	}
 }

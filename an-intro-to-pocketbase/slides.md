@@ -24,9 +24,6 @@ notes:
 
 > Open Source backend, for your next SaaS and Mobile app in 1 file
 
-notes:
-
-- 
 
 ----
 
@@ -44,7 +41,9 @@ notes:
 
 # What is a Backend as a Service (BaaS)?
 
-Handle the basic repetitive tasks: 
+Handle the basic repetitive tasks
+
+notes:
 
 - Authentication
 - Database Management 
@@ -55,22 +54,15 @@ Handle the basic repetitive tasks:
 # Why use PocketBase?
 
 - Runs from a single binary
-  - Embedded SQLite DB
 - Written in Go
-   - Use as a framework
-- Easy to use Dashboard (UI)
-  - Written in Svelte
+   - Extend as framework
+- Easy to use Dashboard
 
 notes:
-
-- Scale can handle 10k connections on $6 VPS (Hetzner 2vCPU, 4GB RAM)
-
----
-
-## Terminology
-
-- Collection: Is a SQLite table
-- Record: Is a single entry in a collection
+- embeds SQLite DB
+- UI Written in Svelte
+- Scale can handle 10k connections on $6 VPS
+- Super easy to self-host
 
 ----
 
@@ -80,18 +72,18 @@ notes:
 
 notes:
 
-- Collections
+`- Collections
   - Fields
   - API Rules
 - Admin Account
-- Logs
+- Logs`
 
 ---
 
 ## Use as a Framework
 
 
-```go
+```go [5-9|11-17]
 // main.go
 
 package main
@@ -121,7 +113,7 @@ go run main.go serve --http=localhost:8080
 
 ## Add a Route
 
-```go
+```go [14-18]
 # main.go
 
 import (
@@ -133,12 +125,15 @@ import (
     "github.com/pocketbase/pocketbase/core"
 )
 
-...
+func main() {
+    //...
 
-app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-    e.Router.POST("/hello", handler, middlewares)
-    return nil
-})
+    app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+        e.Router.POST("/hello", handler, middlewares)
+        return nil
+    })
+}
+
 ```
 
 notes:
@@ -159,7 +154,14 @@ app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 })
 ```
 
----
+notes:
+
+- actual function
+- some middlewares
+   - log request
+   - check user is auth
+
+----
 
 ## Client Code
 
@@ -174,49 +176,13 @@ await pb.send("/hello", {
 });
 ```
 
+notes:
+
+- fetch
+
 ---
 
-## Database
-
-- SQLite
-- Production?
-  - Write-Ahead Logging (WAL mode)
-
-notes:
-
-- 
-
-----
-
-## What is WAL Mode?
-
-![WAL Mode Animation](images/wal_animation.gif)
-
-----
-
-## Why use WAL Mode? 
-
-- Is significantly faster in most scenarios. 
-     - Fewer writes
-- WAL uses many fewer `fsync()` operations
-  - POSIX system call `fsync()` commits buffered data to permanent storage or disk
-  - `fsync()` is expensive
-- Provides more concurrency as readers do not block writers and a writer does not block readers.
-
-
-notes:
-
-- No network file support
-- Not atomic when commits across separate DB's
-- Might be slightly slower 1-2% for read heavy and very rare write apps
-
-----
-
-```go
-record, err := app.Dao().FindRecordById("comments", "RECORD_ID")
-```
-
-----
+## Add Record to DB
 
 ```go [6-8|11-15|16-18]
 // ...
@@ -291,7 +257,7 @@ pb.collection("comments").getList(1, 30, {
 
 ## Migrations
 
-```go
+```go [11|16-19]
 // main.go
 package main
 
@@ -302,7 +268,7 @@ import (
     "github.com/pocketbase/pocketbase/plugins/migratecmd"
 
     // you must have have at least one .go migration file in the "migrations" directory
-     _ "yourpackage/migrations"
+    _ "gitlab.com/hmajid2301/talks/an-intro-to-pocketbase/example/migrations"
 )
 
 func main() {
@@ -316,83 +282,113 @@ func main() {
 }
 ```
 
+----
+
+## SQLite
+
+- Does it Scale?
+    - Write-Ahead Logging (WAL mode)
+
+notes:
+
+- https://twitter.com/levelsio/status/1520357256373874688
+
+----
+
+## What is WAL Mode?
+
+<iframe src="images/wal_animation.html" width="1000" height="500"  frameborder="0">
+
+notes:
+
+- SQLite groups rows together into 4KB chunks called "pages".
+ - benefits 
+- POSIX system call `fsync()` commits buffered data to permanent storage or disk
+- `fsync()` is expensive
+
+----
+
+## Why use WAL Mode? 
+
+- Is significantly faster in most scenarios. 
+- WAL uses many fewer `fsync()` operations
+- Provides more concurrency as a writer does not block readers.
+
+notes:
+
+- No network file support
+- Not atomic when commits across separate DB's
+- Might be slightly slower 1-2% for read heavy and very rare write apps
+- In rollback mode, you can have concurrent readers but not readers & writers
+
+
 ---
 
 ## Testing
 
 
-```go [34-55|58-61]
+```go [29-41|43-45]
 package main
 
 import (
-    "net/http"
-    "testing"
+	"net/http"
+	"testing"
 
-    "github.com/pocketbase/pocketbase/tests"
-    "github.com/pocketbase/pocketbase/tokens"
+	"github.com/pocketbase/pocketbase/tests"
+	"github.com/pocketbase/pocketbase/tokens"
 )
 
 const testDataDir = "./test_pb_data"
 
 func TestHelloEndpoint(t *testing.T) {
-    recordToken, err := generateRecordToken("users", "test@example.com")
-    if err != nil {
-        t.Fatal(err)
-    }
+	recordToken, err := generateRecordToken("users", "test@example.com")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-    // setup the test ApiScenario app instance
-    setupTestApp := func() (*tests.TestApp, error) {
-        testApp, err := tests.NewTestApp(testDataDir)
-        if err != nil {
-            return nil, err
-        }
-        // no need to cleanup since scenario.Test() will do that for us
-        // defer testApp.Cleanup()
+	setupTestApp := func() (*tests.TestApp, error) {
+		testApp, err := tests.NewTestApp(testDataDir)
+		if err != nil {
+			return nil, err
+		}
 
-        bindAppHooks(testApp)
+		bindAppHooks(testApp)
+		return testApp, nil
+	}
 
-        return testApp, nil
-    }
+	scenarios := []tests.ApiScenario{
+		{
+			Name:   "try to get response",
+			Method: http.MethodPost,
+			Url:    "/hello",
+			RequestHeaders: map[string]string{
+				"Authorization": recordToken,
+			},
+			ExpectedStatus:  201,
+			ExpectedContent: nil,
+			TestAppFactory:  setupTestApp,
+		},
+	}
 
-    scenarios := []tests.ApiScenario{
-        {
-            Name:   "try to get response",
-            Method: http.MethodPost,
-            Url:    "/hello",
-            RequestHeaders: map[string]string{
-                "Authorization": generateRecordToken,
-            },
-            ExpectedStatus:  201,
-            ExpectedContent: nil,
-            TestAppFactory:  setupTestApp,
-        },
-    }
-
-    for _, scenario := range scenarios {
-        scenario.Test(t)
-    }
+	for _, scenario := range scenarios {
+		scenario.Test(t)
+	}
 }
 
 func generateRecordToken(collectionNameOrId string, email string) (string, error) {
-    app, err := tests.NewTestApp(testDataDir)
-    if err != nil {
-        return "", err
-    }
-    defer app.Cleanup()
+	app, err := tests.NewTestApp(testDataDir)
+	if err != nil {
+		return "", err
+	}
+	defer app.Cleanup()
 
-    record, err := app.Dao().FindAuthRecordByEmail(collectionNameOrId, email)
-    if err != nil {
-        return "", err
-    }
+	record, err := app.Dao().FindAuthRecordByEmail(collectionNameOrId, email)
+	if err != nil {
+		return "", err
+	}
 
-    return tokens.NewRecordAuthToken(app, record)
+	return tokens.NewRecordAuthToken(app, record)
 }
-```
-
-----
-
-```bash
-./pocketbase serve --dir="./test_pb_data"
 ```
 
 ---
@@ -418,3 +414,4 @@ func generateRecordToken(collectionNameOrId string, email string) (string, error
 - [Awesome PocketBase](https://github.com/benallfree/awesome-pocketbase)
 - [Fireship Video on PocketBase](https://www.youtube.com/watch?v=Wqy3PBEglXQ)
 - [WAL Mode Explained](https://www.youtube.com/watch?v=86jnwSU1F6Q)
+- [My App Built Using PocketBase](https://gitlab.com/bookmarkey)
