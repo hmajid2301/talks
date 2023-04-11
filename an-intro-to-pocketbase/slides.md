@@ -18,12 +18,15 @@ notes:
 - Loves cats 🐱
 - Avid cricketer 🏏 #BazBall
 
+----
+
+<img width="45%" height="auto" data-src="images/side_project.png">
+
 ---
 
 # What is PocketBase?
 
 > Open Source backend, for your next SaaS and Mobile app in 1 file
-
 
 ----
 
@@ -64,11 +67,11 @@ notes:
 - Scale can handle 10k connections on $6 VPS
 - Super easy to self-host
 
-----
+---
 
 ## Demo
 
-[PocketBase](http://localhost:8080/_/)
+[PocketBase](http://localhost:8090/_/)
 
 notes:
 
@@ -211,7 +214,7 @@ app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 })
 ```
 
----
+----
 
 ## Expand Relations
 
@@ -253,7 +256,7 @@ pb.collection("comments").getList(1, 30, {
 }
 ```
 
----
+----
 
 ## Migrations
 
@@ -282,7 +285,7 @@ func main() {
 }
 ```
 
-----
+---
 
 ## SQLite
 
@@ -290,8 +293,6 @@ func main() {
     - Write-Ahead Logging (WAL mode)
 
 notes:
-
-- https://twitter.com/levelsio/status/1520357256373874688
 
 ----
 
@@ -398,6 +399,10 @@ func generateRecordToken(collectionNameOrId string, email string) (string, error
 - Need to self-host
 - Does not have a stable API yet
 - Can only scale vertically
+
+----
+
+<img width="50%" height="auto" data-src="images/colour.jpg">
 
 ---
 

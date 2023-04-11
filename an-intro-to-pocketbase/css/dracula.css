@@ -426,3 +426,14 @@ section.has-light-background h6 {
 .reveal ol li {
   counter-increment: li;
 }
+
+.footer {
+  position: absolute;
+  left: 5%;
+  bottom: 5%;
+}
+
+.footer img {
+  width: 5vw;
+  height: auto;
+}
