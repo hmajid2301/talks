@@ -13,6 +13,19 @@ import (
 	_ "gitlab.com/hmajid2301/talks/an-intro-to-pocketbase/example/migrations"
 )
 
+var _ models.Model = (*Comment)(nil)
+
+type Comment struct {
+	models.BaseModel
+	Post    string `db:"post" json:"post"`
+	User    string `db:"user" json:"user"`
+	Message string `db:"message" json:"message"`
+}
+
+func (c *Comment) TableName() string {
+	return "comments"
+}
+
 func main() {
 	app := pocketbase.New()
 	migratecmd.MustRegister(app, app.RootCmd, &migratecmd.Options{
@@ -29,19 +42,17 @@ func main() {
 func bindAppHooks(app core.App) {
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 		e.Router.POST("/hello", func(c echo.Context) error {
-			collection, err := app.Dao().FindCollectionByNameOrId("comments")
+			comment := &Comment{
+				Post:    "<post_id>",
+				User:    "<user_id>",
+				Message: "Hi 👋, London Gophers!",
+			}
+
+			err := app.Dao().Save(comment)
 			if err != nil {
 				return err
 			}
 
-			record := models.NewRecord(collection)
-			record.Set("post", "<postid>")
-			record.Set("user", "<userid>")
-			record.Set("message", "Hi 👋, London Gophers!")
-
-			if err := app.Dao().SaveRecord(record); err != nil {
-				return err
-			}
 			return c.NoContent(http.StatusCreated)
 		},
 			apis.ActivityLogger(app),
