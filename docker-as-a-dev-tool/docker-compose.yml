@@ -6,11 +6,11 @@ services:
       cache_from:
         - registry.gitlab.com/hmajid2301/talks/docker-as-a-dev-tool
     volumes:
-        - ./index.html:/reveal/index.html
-        - ./slides.md:/reveal/slides.md
-        - ./css/zoe.css:/reveal/dist/zoe.css
-        - ./css/code.css:/reveal/dist/code.css
-        - ./images/:/reveal/images/
+      - ./index.html:/reveal/index.html
+      - ./slides.md:/reveal/slides.md
+      - ./css/zoe.css:/reveal/dist/zoe.css
+      - ./css/code.css:/reveal/dist/code.css
+      - ./images/:/reveal/images/
     ports:
       - 127.0.0.1:8000:8000
       - 127.0.0.1:35729:35729

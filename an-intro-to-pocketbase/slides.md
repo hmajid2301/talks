@@ -36,7 +36,7 @@ notes:
 - Supabase
 - Amplify
 
----
+----
 
 ![I don't understand](images/firebase-supabase.jpg)
 
@@ -52,7 +52,7 @@ notes:
 - Database Management
 - Email Verification
 
----
+----
 
 # Why use PocketBase?
 
@@ -70,18 +70,17 @@ notes:
 
 ---
 
-## Demo
+## Dashboard
 
-[PocketBase](http://localhost:8090/_/)
+![Collection](images/collection.png)
 
-notes:
+----
 
-`- Collections
+<img width="45%" height="auto" data-src="images/api_rules.png">
 
-- Fields
-- API Rules
-- Admin Account
-- Logs`
+----
+
+![Logs](images/logs.png)
 
 ---
 
@@ -107,7 +106,7 @@ func main() {
 }
 ```
 
----
+----
 
 ```bash
 go run main.go serve --http=localhost:8080
@@ -165,7 +164,7 @@ notes:
   - log request
   - check user is auth
 
----
+----
 
 ## Client Code
 
@@ -235,7 +234,7 @@ func main() {
 
 ![Expand DB Schema](images/expand.png)
 
----
+----
 
 ## Client
 
@@ -245,7 +244,7 @@ pb.collection("comments").getList(1, 30, {
 }),
 ```
 
----
+----
 
 ```json [11|12-17]
 {
@@ -284,7 +283,7 @@ Permissions  Size User   Group  Date Modified Git Name
 .rw-r--r--  1.0Ki haseeb haseeb  2 Apr 22:52   -- 1680445481_updated_posts.go
 ```
 
----
+----
 
 ```go [11|16-19]
 // main.go
@@ -320,7 +319,7 @@ func main() {
 
 notes:
 
----
+----
 
 ## What is WAL Mode?
 
@@ -333,7 +332,7 @@ notes:
 - POSIX system call `fsync()` commits buffered data to permanent storage or disk
 - `fsync()` is expensive
 
----
+----
 
 ## Why use WAL Mode?
 
@@ -422,7 +421,7 @@ func generateRecordToken(collectionNameOrId string, email string) (string, error
 
 ![Deploy](images/deploy.png)
 
----
+----
 
 # Dockerfile
 
@@ -445,7 +444,7 @@ ENTRYPOINT [ "./example" ]
 CMD ["serve", "--http=0.0.0.0:8080"]
 ```
 
----
+----
 
 # fly.io
 
@@ -498,13 +497,13 @@ destination = "/pb_data"
 source = "pb_data"
 ```
 
----
+----
 
 ```bash
 fly deploy
 ```
 
----
+----
 
 ## Gitlab CI
 
@@ -536,7 +535,7 @@ notes:
 
 - Scale horizontaly with LiteFS
 
----
+----
 
 <img width="50%" height="auto" data-src="images/colour.jpg">
 

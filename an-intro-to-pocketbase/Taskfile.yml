@@ -1,12 +1,8 @@
 version: "3"
-
 includes:
   pocketbase:
     taskfile: ./example/Taskfile.yml
     dir: ./example
-
 tasks:
   start:
-    cmds:
-      - docker compose up --build -d
-      - task: pocketbase:start
+    cmds: [ docker compose up --build -d ]
