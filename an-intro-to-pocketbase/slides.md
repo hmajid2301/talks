@@ -86,6 +86,12 @@ notes:
 
 ## Use as a Framework
 
+notes:
+
+
+- create a simple web application
+
+----
 ```go [5-9|11-17]
 // main.go
 
@@ -187,39 +193,39 @@ notes:
 
 ## Add Record to DB
 
-```go [4-9|20-24|26-29]
+```go [4-11|20-26|28]
 // ...
-var _ models.Model = (*Comment)(nil)
+var _ models.Model = (*Hello)(nil)
 
-type Comment struct {
+type Hello struct {
 	models.BaseModel
-	Post    string `db:"post" json:"post"`
-	User    string `db:"user" json:"user"`
 	Message string `db:"message" json:"message"`
 }
 
-func (c *Comment) TableName() string {
-	return "comments"
+func (c *Hello) TableName() string {
+	return "hello"
 }
 
 func main() {
     // ...
 
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.POST("/hello", func(c echo.Context) error {
-			comment := &Comment{
-				Post:    "<post_id>",
-				User:    "<user_id>",
-				Message: "Hi 👋, London Gophers!",
-			}
+		e.Router.POST("/hello",
+      // handler
+      func(c echo.Context) error {
+        hello := &Hello{
+          Message: "Hi 👋, welcome to London Gophers!",
+        }
 
-			err := app.Dao().Save(comment)
-			if err != nil {
-				return err
-			}
+        err := app.Dao().Save(hello)
+        if err != nil {
+          return err
+        }
 
-			return c.NoContent(http.StatusCreated)
-		},
+        return c.NoContent(http.StatusCreated)
+      },
+
+      // middlewares
 			apis.ActivityLogger(app),
 			apis.RequireRecordAuth(),
 		)
@@ -285,7 +291,7 @@ Permissions  Size User   Group  Date Modified Git Name
 
 ----
 
-```go [11|16-19]
+```go [10-12|18-22]
 // main.go
 package main
 
@@ -295,7 +301,8 @@ import (
     "github.com/pocketbase/pocketbase"
     "github.com/pocketbase/pocketbase/plugins/migratecmd"
 
-    // you must have have at least one .go migration file in the "migrations" directory
+    // you must have have at least one 
+    // .go migration file in the "migrations" directory
     _ "gitlab.com/hmajid2301/talks/an-intro-to-pocketbase/example/migrations"
 )
 
@@ -303,7 +310,9 @@ func main() {
     app := pocketbase.New()
 
     migratecmd.MustRegister(app, app.RootCmd, &migratecmd.Options{
-        Automigrate: true, // auto creates migration files when making collection changes
+        // auto creates migration files
+        // when making collection changes
+        Automigrate: true,
     })
 
     // ...
@@ -434,13 +443,13 @@ RUN apk update && apk upgrade && \
 	update-ca-certificates
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o example main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o app main.go
 
 FROM scratch
-COPY --from=builder /build/example .
+COPY --from=builder /build/app .
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
-ENTRYPOINT [ "./example" ]
+ENTRYPOINT [ "./app" ]
 CMD ["serve", "--http=0.0.0.0:8080"]
 ```
 
@@ -449,6 +458,7 @@ CMD ["serve", "--http=0.0.0.0:8080"]
 # fly.io
 
 ```toml [7-8|45-47]
+# fly.toml
 app = "example"
 kill_signal = "SIGINT"
 kill_timeout = 5
@@ -508,7 +518,7 @@ fly deploy
 ## Gitlab CI
 
 ```yml
-deploy
+deploy:
   stage: deploy
   only:
     - main

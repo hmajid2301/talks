@@ -6,11 +6,11 @@ RUN apk update && apk upgrade && \
 	update-ca-certificates
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o example main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o app main.go
 
 FROM scratch
-COPY --from=builder /build/example .
+COPY --from=builder /build/app .
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
-ENTRYPOINT [ "./example" ]
+ENTRYPOINT [ "./app" ]
 CMD ["serve", "--http=0.0.0.0:8080"]

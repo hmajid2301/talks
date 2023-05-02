@@ -13,17 +13,15 @@ import (
 	_ "gitlab.com/hmajid2301/talks/an-intro-to-pocketbase/example/migrations"
 )
 
-var _ models.Model = (*Comment)(nil)
+var _ models.Model = (*Hello)(nil)
 
-type Comment struct {
+type Hello struct {
 	models.BaseModel
-	Post    string `db:"post" json:"post"`
-	User    string `db:"user" json:"user"`
 	Message string `db:"message" json:"message"`
 }
 
-func (c *Comment) TableName() string {
-	return "comments"
+func (c *Hello) TableName() string {
+	return "hello"
 }
 
 func main() {
@@ -42,13 +40,11 @@ func main() {
 func bindAppHooks(app core.App) {
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 		e.Router.POST("/hello", func(c echo.Context) error {
-			comment := &Comment{
-				Post:    "<post_id>",
-				User:    "<user_id>",
-				Message: "Hi 👋, London Gophers!",
+			hello := &Hello{
+				Message: "Hi 👋, welcome to London Gophers!",
 			}
 
-			err := app.Dao().Save(comment)
+			err := app.Dao().Save(hello)
 			if err != nil {
 				return err
 			}
