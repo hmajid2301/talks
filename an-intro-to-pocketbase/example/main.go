@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -13,15 +14,17 @@ import (
 	_ "gitlab.com/hmajid2301/talks/an-intro-to-pocketbase/example/migrations"
 )
 
-var _ models.Model = (*Hello)(nil)
+var _ models.Model = (*Comments)(nil)
 
-type Hello struct {
+type Comments struct {
 	models.BaseModel
-	Message string `db:"message" json:"message"`
+	User    string `db:"user"`
+	Message string `db:"message"`
+	Post    string `db:"post"`
 }
 
-func (c *Hello) TableName() string {
-	return "hello"
+func (c *Comments) TableName() string {
+	return "comments"
 }
 
 func main() {
@@ -39,12 +42,17 @@ func main() {
 
 func bindAppHooks(app core.App) {
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.POST("/hello", func(c echo.Context) error {
-			hello := &Hello{
-				Message: "Hi 👋, welcome to London Gophers!",
+		e.Router.POST("/comment", func(c echo.Context) error {
+			authRecord, _ := c.Get(apis.ContextAuthRecordKey).(*models.Record)
+			message := fmt.Sprintf("Hi %s 👋, welcome to London Gophers!", authRecord.Username())
+			commentRecord := &Comments{
+				User:    authRecord.Id,
+				Message: message,
+				// Placeholder
+				Post: "1",
 			}
 
-			err := app.Dao().Save(hello)
+			err := app.Dao().Save(commentRecord)
 			if err != nil {
 				return err
 			}

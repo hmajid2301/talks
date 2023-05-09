@@ -20,7 +20,7 @@ notes:
 
 ---
 
-<img width="45%" height="auto" data-src="images/side_project.png">
+<img width="70%" height="auto" data-src="images/side_project.png">
 
 ---
 
@@ -138,7 +138,7 @@ func main() {
     //...
 
     app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-        e.Router.POST("/hello", handler, middlewares)
+        e.Router.POST("/comment", handler, middlewares)
         return nil
     })
 }
@@ -153,11 +153,16 @@ notes:
 
 ```go
 app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-    e.Router.POST("/hello", func(c echo.Context) error {
-        return c.NoContent(http.StatusCreated)
-    },
-        apis.ActivityLogger(app),
-        apis.RequireRecordAuth(),
+    e.Router.POST("/comment", 
+
+      //handler
+      func(c echo.Context) error {
+          return c.NoContent(http.StatusCreated)
+      },
+
+      //middlewares
+      apis.ActivityLogger(app),
+      apis.RequireRecordAuth(),
     )
     return nil
 })
@@ -177,9 +182,9 @@ notes:
 ```js
 import PocketBase from "pocketbase";
 
-const pb = new PocketBase("http://127.0.0.1:8090");
+const pb = new PocketBase("http://127.0.0.1:8080");
 
-await pb.send("/hello", {
+await pb.send("/comment", {
   // for all possible options check
   // https://developer.mozilla.org/en-US/docs/Web/API/fetch#options
 });
@@ -193,44 +198,49 @@ notes:
 
 ## Add Record to DB
 
-```go [4-11|20-26|28]
+```go [2|3-12|22-27|29-32]
 // ...
-var _ models.Model = (*Hello)(nil)
-
-type Hello struct {
+var _ models.Model = (*Comments)(nil)
+type Comments struct {
 	models.BaseModel
+	Post    string `db:"post" json:"post"`
+	User    string `db:"user" json:"user"`
 	Message string `db:"message" json:"message"`
 }
 
-func (c *Hello) TableName() string {
-	return "hello"
+func (c *Comments) TableName() string {
+	return "comments"
 }
 
 func main() {
-    // ...
+  // ...
 
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.POST("/hello",
-      // handler
-      func(c echo.Context) error {
-        hello := &Hello{
-          Message: "Hi 👋, welcome to London Gophers!",
-        }
+    e.Router.POST("/comment",
+    // handler
+    func(c echo.Context) error {
+      auth, _ := c.Get(apis.ContextAuthRecordKey).(*models.Record)
+      m := fmt.Sprintf("Hi 👋 from %s", auth.Username())
+      commentRecord := &Comments{
+        User:    auth.Id,
+        Message: m,
+        Post: "1",
+      }
 
-        err := app.Dao().Save(hello)
-        if err != nil {
-          return err
-        }
+      err := app.Dao().Save(commentRecord)
+      if err != nil {
+        return err
+      }
 
-        return c.NoContent(http.StatusCreated)
-      },
+      return c.NoContent(http.StatusCreated)
+    },
 
-      // middlewares
-			apis.ActivityLogger(app),
-			apis.RequireRecordAuth(),
-		)
-		return nil
-	})
+    // middlewares
+    apis.ActivityLogger(app),
+    apis.RequireRecordAuth(),
+    )
+  return nil
+  })
 }
 ```
 
@@ -360,7 +370,7 @@ notes:
 
 ## Testing
 
-```go [29-41|43-45]
+```go [31-43|46-48]
 package main
 
 import (
@@ -371,9 +381,11 @@ import (
 	"github.com/pocketbase/pocketbase/tokens"
 )
 
-const testDataDir = "./test_pb_data"
+// username: test@example.com
+// password: password11
+const testDataDir = "./tests/pb_data"
 
-func TestHelloEndpoint(t *testing.T) {
+func TestCommentEndpoint(t *testing.T) {
 	recordToken, err := generateRecordToken("users", "test@example.com")
 	if err != nil {
 		t.Fatal(err)
@@ -389,23 +401,25 @@ func TestHelloEndpoint(t *testing.T) {
 		return testApp, nil
 	}
 
-	scenarios := []tests.ApiScenario{
-		{
-			Name:   "try to get response",
-			Method: http.MethodPost,
-			Url:    "/hello",
-			RequestHeaders: map[string]string{
-				"Authorization": recordToken,
-			},
-			ExpectedStatus:  201,
-			ExpectedContent: nil,
-			TestAppFactory:  setupTestApp,
-		},
-	}
+  scenarios := []tests.ApiScenario{
+    {
+      Name:   "try to get response",
+      Url:    "/comment",
+      Method: http.MethodPost,
+      RequestHeaders: map[string]string{
+        "Authorization": recordToken,
+      },
+      ExpectedStatus:  201,
+      ExpectedContent: nil,
+      ExpectedEvents:  map[string]int{"OnModelAfterCreate": 1, 
+                                      "OnModelBeforeCreate": 1},
+      TestAppFactory:  setupTestApp,
+    },
+  }
 
-	for _, scenario := range scenarios {
-		scenario.Test(t)
-	}
+  for _, scenario := range scenarios {
+    scenario.Test(t)
+  }
 }
 
 func generateRecordToken(collectionNameOrId string, email string) (string, error) {
@@ -434,7 +448,7 @@ func generateRecordToken(collectionNameOrId string, email string) (string, error
 
 # Dockerfile
 
-```dockerfile [11-16]
+```dockerfile [1-9|11-17]
 FROM golang:1.20-alpine as builder
 
 WORKDIR /build
@@ -447,7 +461,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o app main.go
 
 FROM scratch
 COPY --from=builder /build/app .
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt \
+                    /etc/ssl/certs/
 
 ENTRYPOINT [ "./app" ]
 CMD ["serve", "--http=0.0.0.0:8080"]
@@ -517,7 +532,7 @@ fly deploy
 
 ## Gitlab CI
 
-```yml
+```yml [|12]
 deploy:
   stage: deploy
   only:
@@ -529,7 +544,7 @@ deploy:
     - apk add curl
     - curl -L https://fly.io/install.sh | sh
   script:
-    - /root/.fly/bin/flyctl deploy
+    - fly deploy
 ```
 
 ---

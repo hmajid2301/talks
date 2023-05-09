@@ -8,9 +8,11 @@ import (
 	"github.com/pocketbase/pocketbase/tokens"
 )
 
-const testDataDir = "./test_pb_data"
+// username: test@example.com
+// password: password11
+const testDataDir = "./tests/pb_data"
 
-func TestHelloEndpoint(t *testing.T) {
+func TestCommentEndpoint(t *testing.T) {
 	recordToken, err := generateRecordToken("users", "test@example.com")
 	if err != nil {
 		t.Fatal(err)
@@ -29,13 +31,14 @@ func TestHelloEndpoint(t *testing.T) {
 	scenarios := []tests.ApiScenario{
 		{
 			Name:   "try to get response",
+			Url:    "/comment",
 			Method: http.MethodPost,
-			Url:    "/hello",
 			RequestHeaders: map[string]string{
 				"Authorization": recordToken,
 			},
 			ExpectedStatus:  201,
 			ExpectedContent: nil,
+			ExpectedEvents:  map[string]int{"OnModelAfterCreate": 1, "OnModelBeforeCreate": 1},
 			TestAppFactory:  setupTestApp,
 		},
 	}
