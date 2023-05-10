@@ -72,15 +72,7 @@ notes:
 
 ## Dashboard
 
-![Collection](images/collection.png)
-
-----
-
-<img width="45%" height="auto" data-src="images/api_rules.png">
-
-----
-
-![Logs](images/logs.png)
+![Dashboard](images/dashboard.gif)
 
 ---
 
