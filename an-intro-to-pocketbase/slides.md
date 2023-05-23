@@ -15,6 +15,7 @@ notes:
 - Haseeb Majid
   - A software engineer
   - https://haseebmajid.dev
+- Backend Software Engineer at [Curve](https://www.curve.com/en-gb/)
 - Loves cats 🐱
 - Avid cricketer 🏏 #BazBall
 
@@ -544,6 +545,7 @@ deploy:
 ## Caveats
 
 - Need to self-host
+  - [PocketHost](https://pockethost.io/)
 - Does not have a stable API yet
 - Can only scale vertically
   - [LiteFS](https://fly.io/blog/introducing-litefs/)
