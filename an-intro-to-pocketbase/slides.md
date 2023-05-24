@@ -23,23 +23,9 @@ notes:
 
 <img width="70%" height="auto" data-src="images/side_project.png">
 
----
-
-# What is PocketBase?
-
-> Open Source backend, for your next SaaS and Mobile app in 1 file
-
----
-
-# Similar Products
-
-- Firebase
-- Supabase
-- Amplify
-
 ----
 
-![I don't understand](images/firebase-supabase.jpg)
+<img width="50%" height="auto" data-src="images/colour.jpg">
 
 ---
 
@@ -54,6 +40,22 @@ notes:
 - Email Verification
 
 ----
+
+# What is PocketBase?
+
+> Open Source backend, for your next SaaS and Mobile app in 1 file
+
+----
+
+# Similar Products
+
+- Firebase
+- Supabase
+- Amplify
+
+----
+
+<!-- .slide: data-background-image="./images/dashboard.gif" -->
 
 # Why use PocketBase?
 
@@ -553,10 +555,6 @@ deploy:
 notes:
 
 - Scale horizontaly with LiteFS
-
-----
-
-<img width="50%" height="auto" data-src="images/colour.jpg">
 
 ---
 
