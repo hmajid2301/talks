@@ -55,8 +55,6 @@ notes:
 
 ----
 
-<!-- .slide: data-background-image="./images/dashboard.gif" -->
-
 # Why use PocketBase?
 
 - Runs from a single binary
