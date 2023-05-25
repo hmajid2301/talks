@@ -23,10 +23,6 @@ notes:
 
 <img width="70%" height="auto" data-src="images/side_project.png">
 
-----
-
-<img width="50%" height="auto" data-src="images/colour.jpg">
-
 ---
 
 # What is a Backend as a Service (BaaS)?
@@ -85,6 +81,13 @@ notes:
 - create a simple web application
 
 ----
+
+```bash
+go mod init gitlab.com/hmajid2301/talks/an-intro-to-pocketbase/example
+go get github.com/pocketbase/pocketbase
+```
+----
+
 ```go [5-9|11-17]
 // main.go
 
@@ -191,9 +194,8 @@ notes:
 
 ## Add Record to DB
 
-```go [2|3-12|22-27|29-32]
+```go [2-7|13|22-27|29-32]
 // ...
-var _ models.Model = (*Comments)(nil)
 type Comments struct {
 	models.BaseModel
 	Post    string `db:"post" json:"post"`
@@ -205,6 +207,7 @@ func (c *Comments) TableName() string {
 	return "comments"
 }
 
+var _ models.Model = (*Comments)(nil)
 func main() {
   // ...
 
@@ -284,12 +287,12 @@ pb.collection("comments").getList(1, 30, {
 ## Migrations
 
 ```bash
-lla migrations/
-Permissions  Size User   Group  Date Modified Git Name
-.rw-r--r--  1.4Ki haseeb haseeb  2 Apr 22:52   -- 1680445294_created_posts.go
-.rw-r--r--  1.3Ki haseeb haseeb  2 Apr 22:52   -- 1680445383_created_comments.go
-.rw-r--r--  2.0Ki haseeb haseeb  2 Apr 22:52   -- 1680445466_updated_comments.go
-.rw-r--r--  1.0Ki haseeb haseeb  2 Apr 22:52   -- 1680445481_updated_posts.go
+ls -al migrations/
+Permissions  User   Group  Date Modified Git Name
+.rw-r--r--   haseeb haseeb  2 Apr 22:52   -- 1680445294_created_posts.go
+.rw-r--r--   haseeb haseeb  2 Apr 22:52   -- 1680445383_created_comments.go
+.rw-r--r--   haseeb haseeb  2 Apr 22:52   -- 1680445466_updated_comments.go
+.rw-r--r--   haseeb haseeb  2 Apr 22:52   -- 1680445481_updated_posts.go
 ```
 
 ----
@@ -310,15 +313,18 @@ import (
 )
 
 func main() {
-    app := pocketbase.New()
+  app := pocketbase.New()
 
-    migratecmd.MustRegister(app, app.RootCmd, &migratecmd.Options{
-        // auto creates migration files
-        // when making collection changes
-        Automigrate: true,
-    })
+  migratecmd.MustRegister(
+    app,
+    app.RootCmd,
+    &migratecmd.Options{
+      // auto creates migration files
+      // when making collection changes
+      Automigrate: true,
+  })
 
-    // ...
+  // ...
 }
 ```
 
@@ -363,7 +369,7 @@ notes:
 
 ## Testing
 
-```go [31-43|46-48]
+```go [31-45|47-49]
 package main
 
 import (
