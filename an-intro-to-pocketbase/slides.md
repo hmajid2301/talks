@@ -37,17 +37,17 @@ notes:
 
 ----
 
-# What is PocketBase?
-
-> Open Source backend, for your next SaaS and Mobile app in 1 file
-
-----
-
-# Similar Products
+# Popular Backends
 
 - Firebase
 - Supabase
 - Amplify
+
+----
+
+# What is PocketBase?
+
+> Open Source backend, for your next SaaS and Mobile app in 1 file
 
 ----
 
@@ -86,6 +86,7 @@ notes:
 go mod init gitlab.com/hmajid2301/talks/an-intro-to-pocketbase/example
 go get github.com/pocketbase/pocketbase
 ```
+
 ----
 
 ```go [5-9|11-17]
@@ -288,16 +289,16 @@ pb.collection("comments").getList(1, 30, {
 
 ```bash
 ls -al migrations/
-Permissions  User   Group  Date Modified Git Name
-.rw-r--r--   haseeb haseeb  2 Apr 22:52   -- 1680445294_created_posts.go
-.rw-r--r--   haseeb haseeb  2 Apr 22:52   -- 1680445383_created_comments.go
-.rw-r--r--   haseeb haseeb  2 Apr 22:52   -- 1680445466_updated_comments.go
-.rw-r--r--   haseeb haseeb  2 Apr 22:52   -- 1680445481_updated_posts.go
+Permissions  User   Group  Date Modified Name
+.rw-r--r--   haseeb haseeb  2 Apr 22:52  1680445294_created_posts.go
+.rw-r--r--   haseeb haseeb  2 Apr 22:52  1680445383_created_comments.go
+.rw-r--r--   haseeb haseeb  2 Apr 22:52  1680445466_updated_comments.go
+.rw-r--r--   haseeb haseeb  2 Apr 22:52  1680445481_updated_posts.go
 ```
 
 ----
 
-```go [10-12|18-22]
+```go [10-12|18-25]
 // main.go
 package main
 
@@ -309,7 +310,7 @@ import (
 
     // you must have have at least one 
     // .go migration file in the "migrations" directory
-    _ "gitlab.com/hmajid2301/talks/an-intro-to-pocketbase/example/migrations"
+    _ "gitlab.com/hmajid2301/talks/.../migrations"
 )
 
 func main() {
