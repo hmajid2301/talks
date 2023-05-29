@@ -21,10 +21,6 @@ notes:
 
 ---
 
-<img width="70%" height="auto" data-src="images/side_project.png">
-
----
-
 # What is a Backend as a Service (BaaS)?
 
 Handle the basic repetitive tasks
@@ -70,6 +66,10 @@ notes:
 ## Dashboard
 
 ![Dashboard](images/dashboard.gif)
+
+---
+
+<img width="70%" height="auto" data-src="images/side_project.png">
 
 ---
 
@@ -238,48 +238,6 @@ func main() {
     )
   return nil
   })
-}
-```
-
----
-
-## Expand Relations
-
-![Expand DB Schema](images/expand.png)
-
-----
-
-## Client
-
-```js
-pb.collection("comments").getList(1, 30, {
-    expand: "users"
-}),
-```
-
-----
-
-```json [11|12-17]
-{
-  // ...
-  "items": [
-    {
-      // ...
-      "id": "lmPJt4Z9CkLW36z",
-      "collectionName": "comments",
-      "post": "WyAw4bDrvws6gGl",
-      "user": "FtHAW9feB5rze7D",
-      "message": "Example message...",
-      "expand": {
-        "user": {
-          "id": "FtHAW9feB5rze7D",
-          "collectionId": "srmAo0hLxEqYF7F",
-          "collectionName": "users"
-          // ...
-        }
-      }
-    }
-  ]
 }
 ```
 
@@ -549,6 +507,15 @@ deploy:
 
 ---
 
+## Other Features
+
+- Expanding Relations
+  - Join tables without making additional request
+- Uploading Files
+- API to create backups
+
+---
+
 ## Caveats
 
 - Need to self-host
@@ -572,7 +539,7 @@ notes:
 
 # Useful Links
 
-- [PocketBase](https://pocketbase.io/docs/)
+- [PocketBase Docs](https://pocketbase.io/docs/)
 - [Fireship Video on PocketBase](https://www.youtube.com/watch?v=Wqy3PBEglXQ)
 - [WAL Mode Explained](https://www.youtube.com/watch?v=86jnwSU1F6Q)
 - [LiteFS](https://fly.io/blog/introducing-litefs/)
