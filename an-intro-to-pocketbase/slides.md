@@ -13,11 +13,14 @@ notes:
 # About Me
 
 - Haseeb Majid
-  - A software engineer
+  - Backend Software Engineer at [Curve](https://www.curve.com/en-gb/)
   - https://haseebmajid.dev
-- Backend Software Engineer at [Curve](https://www.curve.com/en-gb/)
 - Loves cats 🐱
 - Avid cricketer 🏏 #BazBall
+
+---
+
+<img width="70%" height="auto" data-src="images/side_project.jpg">
 
 ---
 
@@ -66,10 +69,6 @@ notes:
 ## Dashboard
 
 ![Dashboard](images/dashboard.gif)
-
----
-
-<img width="70%" height="auto" data-src="images/side_project.png">
 
 ---
 
