@@ -20,7 +20,7 @@ notes:
 
 ---
 
-<img width="70%" height="auto" data-src="images/side_project.jpg">
+<img width="70%" height="auto" data-src="images/side-project.jpg">
 
 ---
 
@@ -36,17 +36,11 @@ notes:
 
 ----
 
-# Popular Backends
+# Popular BaaS
 
 - Firebase
 - Supabase
 - Amplify
-
-----
-
-# What is PocketBase?
-
-> Open Source backend, for your next SaaS and Mobile app in 1 file
 
 ----
 
@@ -76,13 +70,12 @@ notes:
 
 notes:
 
-
 - create a simple web application
 
 ----
 
 ```bash
-go mod init gitlab.com/hmajid2301/talks/an-intro-to-pocketbase/example
+go mod init gitlab.com/hmajid2301/talks/.../example
 go get github.com/pocketbase/pocketbase
 ```
 
@@ -194,7 +187,7 @@ notes:
 
 ## Add Record to DB
 
-```go [2-7|13|22-27|29-32]
+```go [2-7|22-27|29-32]
 // ...
 type Comments struct {
 	models.BaseModel
@@ -327,7 +320,7 @@ notes:
 
 ## Testing
 
-```go [31-45|47-49]
+```go [31-45|47-49|11-13]
 package main
 
 import (
