@@ -279,9 +279,9 @@ func main() {
 }
 ```
 
---- 
+---
 
-![SQL vs Sequel](images/sequel.webp)
+![SQL vs Sequel](images/sequel.jpg)
 
 ---
 
