@@ -279,6 +279,10 @@ func main() {
 }
 ```
 
+--- 
+
+![SQL vs Sequel](images/sequel.webp)
+
 ---
 
 ## SQLite
@@ -504,7 +508,7 @@ deploy:
 - Expanding Relations
   - Join tables without making additional request
 - Uploading Files
-- API to create backups
+- API to manage (DB) backups
 
 ---
 
