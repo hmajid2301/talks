@@ -1,9 +1,10 @@
 # Talks
 
-Code + slides for all of my talks
+Code + slides for all of my talks:
 
-- [My Journey Using Docker as a Development Tool](https://docker-as-a-dev-tool.haseebmajid.dev)
-- [An Introduction to Pocketbase:  A Go-Based Backend as a Service](https://an-intro-to-pocketbase.haseebmajid.dev)
+- [My Journey Using Docker as a Development Tool](https://talks.haseebmajid.dev/docker-as-a-dev-tool)
+- [An Introduction to Pocketbase:  A Go-Based Backend as a Service](https://talks.haseebmajid.dev/an-intro-to-pocketbase)
+- [GitLab Runners and Docker-in-Docker (DinD) Explained](https://talks.haseebmajid.dev/gitlab-runners-and-dind)
 
 ## Appendix
 

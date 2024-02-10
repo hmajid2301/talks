@@ -17,7 +17,7 @@ build-image:
     - docker push "$CI_REGISTRY_IMAGE/$TALK"
   parallel:
     matrix:
-      - TALK: ["docker-as-a-dev-tool", "an-intro-to-pocketbase"]
+      - TALK: ["docker-as-a-dev-tool", "an-intro-to-pocketbase", "gitlab-runners-and-dind"]
 
 combine:
   image: "$CI_REGISTRY_IMAGE/$TALK"
@@ -33,7 +33,7 @@ combine:
       - public
   parallel:
     matrix:
-      - TALK: ["docker-as-a-dev-tool", "an-intro-to-pocketbase"]
+      - TALK: ["docker-as-a-dev-tool", "an-intro-to-pocketbase", "gitlab-runners-and-dind"]
 
 pages:
   stage: pages
@@ -44,6 +44,7 @@ pages:
   dependencies:
     - "combine: [docker-as-a-dev-tool]"
     - "combine: [an-intro-to-pocketbase]"
+    - "combine: [gitlab-runners-and-dind]"
   artifacts:
     paths:
       - public

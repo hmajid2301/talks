@@ -1,0 +1,4 @@
+version: "3"
+tasks:
+  start:
+    cmds: [ reveal-md slides.md --watch --theme css/dracula.css ]
