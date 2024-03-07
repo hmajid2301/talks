@@ -1,4 +1,8 @@
 version: "3"
 tasks:
   start:
-    cmds: [ reveal-md slides.md --watch --theme css/dracula.css ]
+    cmds:
+      - docker compose up --build -d
+
+  start_local:
+    cmds: [reveal-md slides.md --watch --theme dracula]

@@ -1,11 +1,3 @@
----
-title: GitLab Runners and Docker-in-Docker Explained
-output: 
-  revealjs::revealjs_presentation:
-    self_contained: false
-    reveal_plugins: ["search", "zoom", "notes"]
----
-
 # GitLab Runners: Docker-in-Docker Explained
 
 By Haseeb Majid

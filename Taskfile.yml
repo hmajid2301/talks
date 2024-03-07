@@ -7,3 +7,6 @@ includes:
   docker_presentation:
     taskfile: ./docker-as-a-dev-tool/Taskfile.yml
     dir: ./docker-as-a-dev-tool
+  dind_presentation:
+    taskfile: ./gitlab-runners-and-dind/Taskfile.yml
+    dir: ./gitlab-runners-and-dind

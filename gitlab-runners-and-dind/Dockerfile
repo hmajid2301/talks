@@ -1,15 +1,15 @@
-FROM node:14.18.1-alpine3.14 as node
+FROM node:18-alpine as node
 
 FROM node as aggregator 
 RUN mkdir -p /tmp/reveal /dist/scripts
 
-ENV REVEAL_VERSION 4.3.1
+ENV REVEAL_VERSION 4.4.0
 RUN apk add curl
 RUN curl -SLO "https://github.com/hakimel/reveal.js/archive/${REVEAL_VERSION}.tar.gz" \
-	&& tar xzf ${REVEAL_VERSION}.tar.gz && \
-	rm *.tar.gz && \
-	cd /reveal.js-${REVEAL_VERSION}  && \
-	mv package.json package-lock.json /tmp/reveal/
+    && tar xzf ${REVEAL_VERSION}.tar.gz && \
+    rm *.tar.gz && \
+    cd /reveal.js-${REVEAL_VERSION}  && \
+    mv package.json package-lock.json /tmp/reveal/
 
 # Speed up build by removing dependencies that are large and not needed for this use case
 # qunit -> pupeteer -> chrome
@@ -33,7 +33,7 @@ WORKDIR /tmp/reveal/
 RUN node_modules/gulp/bin/gulp.js build
 COPY index.html favicon.ico slides.md ./
 COPY images ./images/
-COPY css/zoe.css ./dist/zoe.css
+COPY css/dracula.css ./dist/dracula.css
 COPY css/code.css ./dist/code.css
 
 RUN mv /tmp/reveal /dist/reveal
